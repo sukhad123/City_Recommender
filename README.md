@@ -1,14 +1,15 @@
 # 🚀 Project Name
 
-Welcome to **Project Name** — a [brief description of your app].  
+Welcome to **Project Name** — City Recommender  .  
 This document provides everything you need to **set up**, **develop**, and **contribute**.
 
 ---
 
 ## 🔗 Quick Links
-1. [Application Setup](#-application-setup)  
-2. [Developer Guide](#-https://www.notion.so/Developer-Contract-268176004ee6807cb089d10314dd1994)  
-3. [Contributor Contract](#-contributor-contract)  
+1. [Application Setup](https://www.notion.so/Application-Setup-265176004ee680578ae2e02865f52a54)  
+2. [Developer Contract](https://www.notion.so/Developer-Contract-268176004ee6807cb089d10314dd1994)  
+ 
+
 
 ---
 
