@@ -7,7 +7,7 @@ This document provides everything you need to **set up**, **develop**, and **con
 
 ## 🔗 Quick Links
 1. [Application Setup](#-application-setup)  
-2. [Developer Guide](#https://www.notion.so/Developer-Contract-268176004ee6807cb089d10314dd1994)  
+2. [Developer Guide](#-https://www.notion.so/Developer-Contract-268176004ee6807cb089d10314dd1994)  
 3. [Contributor Contract](#-contributor-contract)  
 
 ---
