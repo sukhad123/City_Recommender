@@ -25,7 +25,7 @@ This document provides everything you need to **set up**, **develop**, and **con
 git clone https://github.com/sukhad123/PRJ666_Team_9.git
 
 # Enter the project folder
-cd prjproject
+cd prjprojectt
 
 # Install dependencies
 npm install
