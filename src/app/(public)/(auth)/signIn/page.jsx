@@ -1,3 +1,9 @@
+"use client"
 export default function Page() {
-  return <>this is Sign in page</>;
+  const onLogin =async()=>{
+
+  }
+  return <>
+  <button onClick ={onLogin}>Login</button>
+  <button>logout</button></>
 }
