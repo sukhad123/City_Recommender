@@ -23,7 +23,12 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <HeroUIProvider>{children}</HeroUIProvider>
+        <HeroUIProvider>
+          {" "}
+          <main className="dark text-foreground bg-background min-h-screen">
+            {children}
+          </main>
+        </HeroUIProvider>
       </body>
     </html>
   );
