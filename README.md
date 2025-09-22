@@ -1,4 +1,4 @@
-# 🚀 Project Name
+# 🚀 Project Namr
 
 Welcome to **Project Name** — City Recommender  .  
 This document provides everything you need to **set up**, **develop**, and **contribute**.
