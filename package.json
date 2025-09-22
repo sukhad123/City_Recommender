@@ -11,7 +11,9 @@
     "migrate": "node src/db/mongo.js"
   },
   "dependencies": {
+    "@heroui/react": "^2.8.4",
     "dotenv": "^17.2.2",
+    "framer-motion": "^12.23.16",
     "mongodb": "^6.19.0",
     "mongoose": "^8.18.1",
     "next": "15.5.2",
@@ -22,6 +24,8 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@types/node": "24.5.2",
+    "@types/react": "19.1.13",
     "eslint": "^9",
     "eslint-config-next": "15.5.2",
     "tailwindcss": "^4"
