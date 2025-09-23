@@ -43,7 +43,16 @@ export default function AuthCallback() {
                 const idToken = localStorage.getItem("id_token");
                 const userInfo = idToken ? jwtDecode(idToken) : null;
 
-                setUser({ email: userInfo.email });
+                setUser({
+                    email: userInfo.email,
+                    userName: userInfo["cognito:username"],
+                    name: userInfo.name
+                    //Add others if needed
+                });
+
+                console.log(userInfo.email);
+                console.log(userInfo["cognito:username"]);
+                console.log(userInfo.name);
 
                 router.push("/");
             } catch (error) {
