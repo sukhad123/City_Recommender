@@ -13,6 +13,11 @@ import {
   Button,
 } from "@heroui/react";
 
+function redirectToCognitoLogin() {
+  const loginUrl = `https://${process.env.NEXT_PUBLIC_COGNITO_DOMAIN}/login?client_id=${process.env.NEXT_PUBLIC_COGNITO_APP_CLIENT_ID}&response_type=code&scope=openid email profile&redirect_uri=${process.env.NEXT_PUBLIC_COGNITO_REDIRECT_SIGN_IN}`;
+  window.location.href = loginUrl;
+}
+
 export default function NavbarComponent({
   menuItems,
   isAuthenticated = false,
@@ -63,7 +68,7 @@ export default function NavbarComponent({
               <Link href="#">Login</Link>
             </NavbarItem>
             <NavbarItem>
-              <Button as={Link} color="warning" href="#" variant="flat">
+              <Button as={Link} color="warning" onClick={redirectToCognitoLogin} variant="flat">
                 Sign Up
               </Button>
             </NavbarItem>
