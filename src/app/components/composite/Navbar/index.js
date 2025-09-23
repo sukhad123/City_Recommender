@@ -1,6 +1,6 @@
 //Reusable Navbar
 "use client";
-import React from "react";
+import React, { useContext } from "react";
 import {
   Navbar,
   NavbarBrand,
@@ -12,6 +12,7 @@ import {
   Link,
   Button,
 } from "@heroui/react";
+import { UserContext } from "../../../../contexts/userContext";
 
 function redirectToCognitoLogin() {
   const loginUrl = `https://${process.env.NEXT_PUBLIC_COGNITO_DOMAIN}/login?client_id=${process.env.NEXT_PUBLIC_COGNITO_APP_CLIENT_ID}&response_type=code&scope=openid email profile&redirect_uri=${process.env.NEXT_PUBLIC_COGNITO_REDIRECT_SIGN_IN}`;
@@ -24,7 +25,7 @@ export default function NavbarComponent({
   children,
 }) {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-
+  const { user, logout } = useContext(UserContext);
   //props
 
   return (
@@ -45,9 +46,13 @@ export default function NavbarComponent({
             <p className="font-bold text-inherit">City Recommender</p>
           </NavbarBrand>
         </NavbarContent>
-        {isAuthenticated && (
+        {user && (
           <NavbarContent className="hidden md:flex" justify="end">
             {/**Desktop Display  */}
+             <span>{user.email}</span>
+            <Button onClick={() => { logout(); }}>
+            Logout
+          </Button>
             {menuItems.map((item, index) => (
               <NavbarItem key={index} isActive={item.active}>
                 <Link href={item.href}>{item.label}</Link>
@@ -62,14 +67,11 @@ export default function NavbarComponent({
           />
         </NavbarContent>
 
-        {!isAuthenticated && (
+        {!user && (
           <NavbarContent className="hidden md:flex" justify="end">
-            <NavbarItem className="hidden lg:flex">
-              <Link href="#">Login</Link>
-            </NavbarItem>
             <NavbarItem>
               <Button as={Link} color="warning" onClick={redirectToCognitoLogin} variant="flat">
-                Sign Up
+                Sign-In/Sign-Up
               </Button>
             </NavbarItem>
           </NavbarContent>
