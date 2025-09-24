@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { v4 as uuidv4 } from "uuid";
 const CanadianCities = [
   "Toronto",
   "Montreal",
@@ -23,10 +22,6 @@ const CanadianCities = [
 ];
 const reviewSchema = new mongoose.Schema(
   {
-    _id: {
-      type: String, // store UUID as string
-      default: uuidv4, // auto-generate unique UUID
-    },
     comment: {
       type: String,
       required: true,
@@ -37,9 +32,6 @@ const reviewSchema = new mongoose.Schema(
       enum: CanadianCities,
       required: true,
       trim: true,
-    },
-    userId: {
-      type: String,
     },
     //fk referencing user
     user: { type: String, ref: "User", required: true },
