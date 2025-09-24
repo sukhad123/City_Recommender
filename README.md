@@ -1,4 +1,4 @@
-# 🚀 Project Namr
+# 🚀 Project Name
 
 Welcome to **Project Name** — City Recommender  .  
 This document provides everything you need to **set up**, **develop**, and **contribute**.
@@ -25,7 +25,7 @@ This document provides everything you need to **set up**, **develop**, and **con
 git clone https://github.com/sukhad123/PRJ666_Team_9.git
 
 # Enter the project folder
-cd prjprojectt
+cd prjproject
 
 # Install dependencies
 npm install
