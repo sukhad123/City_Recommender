@@ -21,15 +21,9 @@ export default function NavbarComponent({
   children,
 }) {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-<<<<<<< HEAD:src/app/components/composite/Navbar/index.js
-  const { user, logout } = useContext(UserContext);
-  //props
-console.log(user);
-=======
   const auth = useAuth();
   const user = useAuthInfo();
 
->>>>>>> dev:src/app/components/composite/Navbar/index.jsx
   return (
     <>
       <Navbar
