@@ -4,6 +4,7 @@
 import { useAuth } from "react-oidc-context";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import LoadingSpinner from "../../components/ui/spinner";
 
 function Page() {
   const auth = useAuth();
@@ -11,15 +12,15 @@ function Page() {
 
   useEffect(() => {
     if (!auth.isLoading && auth.isAuthenticated) {
-      router.push("/test"); 
+      //Move to this page
+
+      router.push("/test");
     }
-  }, [auth.isLoading, auth.isAuthenticated, router]);
+  }, [auth.isLoading, auth.isAuthenticated]);
 
   if (auth.isLoading) {
-    return <>Loading…</>;
+    return <LoadingSpinner />;
   }
-
-  return <>Finishing login…</>;
 }
 
 export default Page;

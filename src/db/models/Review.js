@@ -42,5 +42,5 @@ const reviewSchema = new mongoose.Schema(
   }
 );
 
-export default mongoose.model("Review", reviewSchema);
+export default mongoose.models.Review || mongoose.model("Review", reviewSchema);
 // enum canadianCities
