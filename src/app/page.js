@@ -14,7 +14,7 @@ export default function Home() {
 
     
       <div className="flex flex-col items-center justify-center text-center px-6 py-12 space-y-6">
-        <p className="max-w-2xl text-lg text-gray-700 dark:text-black-200">
+        <p className="max-w-2xl text-lg ">
           <strong>City Recommender</strong> is a web application designed to help
           new immigrants and Canadian residents discover the best cities to live
           in based on their personal needs and preferences. By combining real
@@ -23,7 +23,7 @@ export default function Home() {
           affordable and suitable locations outside overcrowded major cities.
         </p>
 
-        <p className="max-w-2xl text-lg text-gray-700 dark:text-black-200">
+        <p className="max-w-2xl text-lg ">
           Today, many newcomers and residents face challenges when deciding where
           to live in Canada. Major cities like Toronto and Vancouver are
           overcrowded, with high living costs, limited housing, and growing
@@ -32,7 +32,7 @@ export default function Home() {
           remain overlooked.
         </p>
 
-        <p className="max-w-2xl text-lg text-gray-700 dark:text-black-200">
+        <p className="max-w-2xl text-lg">
           Our solution uses a recommendation system powered by data and
           learning to guide users toward the best-fit Canadian cities based on
           their goals, careers, and lifestyle needs. By highlighting affordable
@@ -42,7 +42,7 @@ export default function Home() {
         </p>
 
         <Link href="/review" passHref>
-          <Button color="primary">Go to Reviews</Button>
+          <Button color="primary">Continue</Button>
         </Link>
       </div>
 
