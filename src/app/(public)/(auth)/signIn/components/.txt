@@ -1,0 +1,2 @@
+Add your components here, if it's reusable in other page
+Consider adding to the components folder so that other page can reuse.
