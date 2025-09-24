@@ -1,6 +1,5 @@
 //Initialize the Cognito
 
-
 import { getAWSCognitoENV } from "../config";
 export function InitializeAWSCognito() {
   try {
@@ -10,7 +9,7 @@ export function InitializeAWSCognito() {
       client_id: appClientId,
       redirect_uri: redirectSignIn,
       response_type: "code",
-      scope: "phone openid email",
+      scope: "email openid profile",
     };
     return cognitoAuthConfig;
   } catch (error) {}

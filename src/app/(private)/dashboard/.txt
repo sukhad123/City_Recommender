@@ -1,0 +1,2 @@
+#Entry Point of the authenticated route
+Once user authenticated move this page

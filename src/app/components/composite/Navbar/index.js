@@ -13,12 +13,8 @@ import {
   Button,
 } from "@heroui/react";
 import { useAuth } from "react-oidc-context";
-
-function redirectToCognitoLogin() {
-  const loginUrl = `https://${process.env.NEXT_PUBLIC_COGNITO_DOMAIN}/login?client_id=${process.env.NEXT_PUBLIC_COGNITO_APP_CLIENT_ID}&response_type=code&scope=openid email profile&redirect_uri=${process.env.NEXT_PUBLIC_COGNITO_REDIRECT_SIGN_IN}`;
-  window.location.href = loginUrl;
-}
-
+import { useAuthInfo } from "../../../auth/utils/getCurrentUserDetails";
+import { signOut } from "../../../auth/utils/signOut";
 export default function NavbarComponent({
   menuItems,
   isAuthenticated = false,
@@ -26,14 +22,7 @@ export default function NavbarComponent({
 }) {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const auth = useAuth();
-  const user = ""
-  if(auth)
-  {
-    //user = auth.user.profile.email;
-  }
-  
- // const user = auth.user.profile.email ?? "";
-  //props
+  const user = useAuthInfo();
 
   return (
     <>
@@ -53,33 +42,46 @@ export default function NavbarComponent({
             <p className="font-bold text-inherit">City Recommender</p>
           </NavbarBrand>
         </NavbarContent>
-
+        {isAuthenticated && (
           <NavbarContent className="hidden md:flex" justify="end">
             {/**Desktop Display  */}
-             <span>{user.email}</span>
-            <Button onClick={() => { logout(); }}>
-            Logout
-          </Button>
+            <span>{user.email}</span>
+            <Button
+              onPress={() => {
+                signOut();
+              }}
+            >
+              Logout
+            </Button>
             {menuItems.map((item, index) => (
               <NavbarItem key={index} isActive={item.active}>
                 <Link href={item.href}>{item.label}</Link>
               </NavbarItem>
             ))}
           </NavbarContent>
+        )}
 
         <NavbarContent className="sm:hidden" justify="end">
           <NavbarMenuToggle
             aria-label={isMenuOpen ? "Close menu" : "Open menu"}
           />
         </NavbarContent>
-
+        {!isAuthenticated && (
           <NavbarContent className="hidden md:flex" justify="end">
             <NavbarItem>
-              <Button as={Link} color="warning" onClick={redirectToCognitoLogin} variant="flat">
+              <Button
+                as={Link}
+                color="warning"
+                onPress={() => {
+                  auth.signinRedirect();
+                }}
+                variant="flat"
+              >
                 Sign-In/Sign-Up
               </Button>
             </NavbarItem>
           </NavbarContent>
+        )}
 
         <NavbarMenu>
           {menuItems.map((item, index) => (
@@ -102,9 +104,7 @@ export default function NavbarComponent({
           ))}
         </NavbarMenu>
       </Navbar>
-      <div className="container mx-auto px-4 pt-16">
-        {children}
-      </div>
+      <div className="container mx-auto px-4 pt-16">{children}</div>
     </>
   );
 }
