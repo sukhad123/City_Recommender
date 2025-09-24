@@ -27,7 +27,7 @@ export default function NavbarComponent({
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const { user, logout } = useContext(UserContext);
   //props
-
+console.log(user);
   return (
     <>
       <Navbar

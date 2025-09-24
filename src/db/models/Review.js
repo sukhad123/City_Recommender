@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Schema, models } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 const CanadianCities = [
   "Toronto",
@@ -38,6 +38,9 @@ const reviewSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    rating: {
+      type:String,
+    },
     userId: {
       type: String,
     },
@@ -49,6 +52,7 @@ const reviewSchema = new mongoose.Schema(
     versionKey: false, // optional: removes __v field
   }
 );
+const Review = models.Review || mongoose.model("Review", reviewSchema);
 
-export default mongoose.model("Review", reviewSchema);
+export default Review;
 // enum canadianCities

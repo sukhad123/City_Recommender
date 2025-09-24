@@ -1,25 +1,29 @@
 "use client";
 import React, { createContext, useState, useEffect } from "react";
+import { jwtDecode } from "jwt-decode";
 
 export const UserContext = createContext(null);
 
 export function UserProvider({ children }) {
-    const [user, setUser] = useState(null);
+  const [user, setUser] = useState(null);
 
-    useEffect(() => {
-        const idToken = localStorage.getItem("id_token");
-        if (idToken) {
-            import("jwt-decode").then(({ default: jwtDecode }) => {
-                const decoded = jwtDecode(idToken);
-                setUser({
-                    email: userInfo.email,
-                    userName: userInfo["cognito:username"],
-                    name: userInfo.name
-                    //Add others if needed
-                });
-            }).catch(() => setUser(null));
-        }
-    }, []);
+  useEffect(() => {
+    const idToken = localStorage.getItem("id_token");
+    if (idToken) {
+      try {
+        const decoded = jwtDecode(idToken);
+        setUser({
+          id: decoded.sub,                  
+          email: decoded.email,
+          userName: decoded["cognito:username"],
+          name: decoded.name,
+        });
+      } catch (err) {
+        console.error("Error decoding token:", err);
+        setUser(null);
+      }
+    }
+  }, []);
 
     // Function to clear user on logout (optional)
     function logout() {
