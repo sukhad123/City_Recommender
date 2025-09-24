@@ -1,8 +1,8 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { HeroUIProvider } from "@heroui/react";
-import {UserProvider} from "../contexts/userContext"
-
+import Providers from "./provider";
+//import {UserProvider} from "../contexts/userContext"
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -12,6 +12,7 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
+//Initialize aws cognito
 
 export const metadata = {
   title: "Create Next App",
@@ -24,14 +25,13 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <HeroUIProvider>
           {" "}
-          <UserProvider>
-          <main className="dark text-foreground bg-background min-h-screen">
-            {children}
-          </main>
-          </UserProvider>
-        </HeroUIProvider>
+          <Providers>
+            <main className="dark text-foreground bg-background min-h-screen">
+              {children}
+            </main>
+            </Providers>
+        
       </body>
     </html>
   );

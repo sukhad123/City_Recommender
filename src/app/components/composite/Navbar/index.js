@@ -12,7 +12,7 @@ import {
   Link,
   Button,
 } from "@heroui/react";
-import { UserContext } from "../../../../contexts/userContext";
+import { useAuth } from "react-oidc-context";
 
 function redirectToCognitoLogin() {
   const loginUrl = `https://${process.env.NEXT_PUBLIC_COGNITO_DOMAIN}/login?client_id=${process.env.NEXT_PUBLIC_COGNITO_APP_CLIENT_ID}&response_type=code&scope=openid email profile&redirect_uri=${process.env.NEXT_PUBLIC_COGNITO_REDIRECT_SIGN_IN}`;
@@ -25,7 +25,14 @@ export default function NavbarComponent({
   children,
 }) {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-  const { user, logout } = useContext(UserContext);
+  const auth = useAuth();
+  const user = ""
+  if(auth)
+  {
+    //user = auth.user.profile.email;
+  }
+  
+ // const user = auth.user.profile.email ?? "";
   //props
 
   return (
@@ -46,7 +53,7 @@ export default function NavbarComponent({
             <p className="font-bold text-inherit">City Recommender</p>
           </NavbarBrand>
         </NavbarContent>
-        {user && (
+
           <NavbarContent className="hidden md:flex" justify="end">
             {/**Desktop Display  */}
              <span>{user.email}</span>
@@ -59,7 +66,6 @@ export default function NavbarComponent({
               </NavbarItem>
             ))}
           </NavbarContent>
-        )}
 
         <NavbarContent className="sm:hidden" justify="end">
           <NavbarMenuToggle
@@ -67,7 +73,6 @@ export default function NavbarComponent({
           />
         </NavbarContent>
 
-        {!user && (
           <NavbarContent className="hidden md:flex" justify="end">
             <NavbarItem>
               <Button as={Link} color="warning" onClick={redirectToCognitoLogin} variant="flat">
@@ -75,7 +80,6 @@ export default function NavbarComponent({
               </Button>
             </NavbarItem>
           </NavbarContent>
-        )}
 
         <NavbarMenu>
           {menuItems.map((item, index) => (
