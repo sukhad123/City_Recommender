@@ -48,6 +48,7 @@ export default function NavbarComponent({
             <span>{user.email}</span>
             <Button
               onPress={() => {
+                auth.removeUser();
                 signOut();
               }}
             >
