@@ -8,8 +8,7 @@ export default function Home() {
   return (
     <>
    
-      <NavbarComponent menuItems={unauthenticatedMenuItems}>
-        This is homepage
+      <NavbarComponent menuItems={unauthenticatedMenuItems} isAuthenticated={false}>
       </NavbarComponent>
 
     

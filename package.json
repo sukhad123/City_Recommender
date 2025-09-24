@@ -12,6 +12,8 @@
   },
   "dependencies": {
     "@heroui/react": "^2.8.4",
+    "@prisma/client": "^6.16.2",
+    "@prisma/extension-accelerate": "^2.0.2",
     "dotenv": "^17.2.2",
     "framer-motion": "^12.23.16",
     "jwt-decode": "^4.0.0",
@@ -27,10 +29,26 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
-    "@types/node": "24.5.2",
+    "@types/node": "^24.5.2",
     "@types/react": "19.1.13",
     "eslint": "^9",
     "eslint-config-next": "15.5.2",
-    "tailwindcss": "^4"
-  }
+    "prisma": "^6.16.2",
+    "tailwindcss": "^4",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2"
+  },
+  "description": "Welcome to **Project Name** — City Recommender  .   This document provides everything you need to **set up**, **develop**, and **contribute**.",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sukhad123/PRJ666_Team_9.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sukhad123/PRJ666_Team_9/issues"
+  },
+  "homepage": "https://github.com/sukhad123/PRJ666_Team_9#readme"
 }

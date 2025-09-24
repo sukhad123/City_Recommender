@@ -1,26 +1,41 @@
-//all the user related crud operation goes here
-import { User } from "../db/index";
-{
-  /**Create a user table */
-}
+"use server"
+import {prisma} from "../db/prisma"
+
+// CREATE USER
 export async function createUser(email) {
   try {
-    const user = await User.create({ email });
-    console.log("User Created", user);
-  } catch (error) {
-    console.log("Error", error);
-  }
-}
-
-{
-  /**Find user by email if exists */
-}
-export async function findUser(email) {
-  try {
-    const user = User.findOne({ email });
+    const user = await prisma.user.create({
+      data: { email },
+    });
+    console.log("✅ User created:", user);
+    if(!user)
+    {
+      return null;
+    }
     return user;
+  
   } catch (error) {
-    console.log("Error", error);
-    return null;
+    console.log(error);
+   return null;
+}}
+
+// FIND USER BY EMAIL
+export async function findUserByEmail(email) {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { email },
+      include: { reviews: true }, // optional: include related reviews
+    });
+
+    if (!user) {
+      console.warn(`⚠️ No user found with email: ${email}`);
+      return false;
+    }
+
+    console.log("📋 User found:", user);
+    return true;
+  } catch (error) {
+    console.error("❌ Error finding user:", error);
   }
+
 }

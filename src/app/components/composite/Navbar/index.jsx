@@ -17,7 +17,7 @@ import { useAuthInfo } from "../../../auth/utils/getCurrentUserDetails";
 import { signOut } from "../../../auth/utils/signOut";
 export default function NavbarComponent({
   menuItems,
-  isAuthenticated = false,
+  isAuthenticated,
   children,
 }) {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
@@ -45,7 +45,8 @@ export default function NavbarComponent({
         {isAuthenticated && (
           <NavbarContent className="hidden md:flex" justify="end">
             {/**Desktop Display  */}
-            <span>{user.email}</span>
+            {user ? <span>{user.email}</span> : null}
+
             <Button
               onPress={() => {
                 auth.removeUser();
