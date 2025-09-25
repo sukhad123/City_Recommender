@@ -41,6 +41,7 @@ export default function ReviewForm({ onSubmit }) {
     // if (!comment || !city) return;
     // onSubmit({ comment, city });
     // setComment("");
+    //
     // setCity("");
   };
 
