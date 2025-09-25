@@ -45,8 +45,12 @@ export default function NavbarComponent({
         {isAuthenticated && (
           <NavbarContent className="hidden md:flex" justify="end">
             {/**Desktop Display  */}
-            {user ? <span>{user.email}</span> : null}
 
+            {menuItems.map((item, index) => (
+              <NavbarItem key={index} isActive={item.active}>
+                <Link href={item.link}>{item.label}</Link>
+              </NavbarItem>
+            ))}
             <Button
               onPress={() => {
                 auth.removeUser();
@@ -55,11 +59,6 @@ export default function NavbarComponent({
             >
               Logout
             </Button>
-            {menuItems.map((item, index) => (
-              <NavbarItem key={index} isActive={item.active}>
-                <Link href={item.href}>{item.label}</Link>
-              </NavbarItem>
-            ))}
           </NavbarContent>
         )}
 

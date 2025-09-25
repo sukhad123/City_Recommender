@@ -3,11 +3,10 @@ import { useState, useContext } from "react";
 import { Button } from "@heroui/react";
 import ReviewModal from "./ReviewModal";
 import RejectModal from "./RejectModal";
-import { UserContext } from "../../../contexts/userContext";
-
+import { useAuthInfo } from "../../../../auth/utils/getCurrentUserDetails";
 export default function ReviewModalClient({ onReviewAdded }) {
   const [isOpen, setIsOpen] = useState(false);
-  const { user } = useContext(UserContext);
+  const { user } = useAuthInfo();
   const [rejectOpen, setRejectOpen] = useState(false);
 
   const handleSubmit = async ({ comment, city, rating }) => {
@@ -34,24 +33,20 @@ export default function ReviewModalClient({ onReviewAdded }) {
 
   return (
     <>
- <Button
-  color="primary"
-  onPress={() => {
-    if (!user) {
-      setRejectOpen(true);   
-    } else {
-      setIsOpen(true);      
-    }
-  }}
->
-  Write a Review
-</Button>
+      <Button
+        color="primary"
+        onPress={() => {
+          setIsOpen(true);
+        }}
+      >
+        Write a Review
+      </Button>
       <ReviewModal
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
         onSubmit={handleSubmit}
       />
-       <RejectModal isOpen={rejectOpen} onClose={() => setRejectOpen(false)} />
+      <RejectModal isOpen={rejectOpen} onClose={() => setRejectOpen(false)} />
     </>
   );
 }

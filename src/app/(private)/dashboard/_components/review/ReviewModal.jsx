@@ -9,22 +9,37 @@ import {
   ModalFooter,
 } from "@heroui/react";
 import { Textarea, Button, Select, SelectItem } from "@heroui/react";
-import { Star } from "lucide-react"; 
+import { Star } from "lucide-react";
 
 const canadianCities = [
-  "Toronto","Montreal","Vancouver","Calgary","Edmonton","Ottawa",
-  "Winnipeg","Quebec City","Hamilton","Kitchener","London","Victoria",
-  "Halifax","Oshawa","Windsor","Saskatoon","Regina","St. John's","Kelowna"
+  "Toronto",
+  "Montreal",
+  "Vancouver",
+  "Calgary",
+  "Edmonton",
+  "Ottawa",
+  "Winnipeg",
+  "Quebec City",
+  "Hamilton",
+  "Kitchener",
+  "London",
+  "Victoria",
+  "Halifax",
+  "Oshawa",
+  "Windsor",
+  "Saskatoon",
+  "Regina",
+  "St. John's",
+  "Kelowna",
 ];
 
-
 export default function ReviewModal({ isOpen, onClose, onSubmit }) {
-  const [rating, setRating] = useState(0); 
+  const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
   const [city, setCity] = useState("");
   const [error, setError] = useState("");
 
-    useEffect(() => {
+  useEffect(() => {
     if (isOpen) {
       setRating(0);
       setComment("");
@@ -39,7 +54,7 @@ export default function ReviewModal({ isOpen, onClose, onSubmit }) {
       return;
     }
     setError("");
-    onSubmit({ comment, city, rating }); 
+    onSubmit({ comment, city, rating });
     setComment("");
     setCity("");
     setRating(0);

@@ -14,7 +14,7 @@ function Page() {
     if (!auth.isLoading && auth.isAuthenticated) {
       //Move to this page
 
-      router.push("/test");
+      router.push("/dashboard");
     }
   }, [auth.isLoading, auth.isAuthenticated]);
 

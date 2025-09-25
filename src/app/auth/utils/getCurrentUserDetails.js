@@ -1,4 +1,5 @@
 // src/app/auth/utils/useAuthInfo.js
+"use client"
 import { useAuth } from "react-oidc-context";
 
 export function useAuthInfo() {
