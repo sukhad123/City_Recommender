@@ -9,6 +9,7 @@ import {
   Card,
   CardBody,
 } from "@heroui/react";
+import { createReview } from "../../../../repositories/review";
 
 const canadianCities = [
   "Toronto",
@@ -32,17 +33,18 @@ const canadianCities = [
   "Kelowna",
 ];
 
-export default function ReviewForm({ onSubmit }) {
+export default function ReviewForm({ email }) {
   const [comment, setComment] = useState("");
   const [city, setCity] = useState("");
 
-  const handleSubmit = () => {
-    //TODO: Add LOGIC TO SUBMIT
-    // if (!comment || !city) return;
+  const handleSubmit = async () => {
+    if (!comment || !city) return;
     // onSubmit({ comment, city });
-    // setComment("");
+    await createReview(comment, city, email);
+    setComment("");
     //
-    // setCity("");
+    setCity("");
+    window.location.reload();
   };
 
   return (

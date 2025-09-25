@@ -13,11 +13,11 @@ export default function Hero({email}) {
       <Card className="max-w-md w-full shadow-lg">
         <CardHeader className="flex flex-col items-center text-center">
           <h1 className="text-2xl font-bold">Welcome 👋</h1>
-          <p className="text-gray-600 mt-1">{email}</p>
+          <p className=" mt-1">{email}</p>
         </CardHeader>
 
         <CardBody className="space-y-4 text-center">
-          <p className="text-gray-700">
+          <p >
             You’re signed in to <strong>City Recommender</strong>.  
             Start exploring Canadian cities tailored to your lifestyle, career, and goals.
           </p>
