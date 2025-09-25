@@ -30,7 +30,8 @@ export async function getAllReviews() {
       city: true,
       comment: true,
       id:true,
-    },
+      createdAt: true,
+      user: true,
+    }
   });
 }
-
