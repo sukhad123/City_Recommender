@@ -96,7 +96,7 @@ export default function ReviewList() {
               </p>
               <p className="text-lg">{review.comment}</p>
               <p className="text-xs text-gray-400">
-                by {review.user?.email ?? "Anonymous"} ·{" "}
+                by {review.user?.name ?? "Anonymous"} ·{" "}
                 {new Date(review.createdAt).toLocaleDateString()}
               </p>
             </CardBody>

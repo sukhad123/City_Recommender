@@ -2,10 +2,10 @@
 import {prisma} from "../db/prisma"
 
 // CREATE USER
-export async function createUser(email) {
+export async function createUser(email, name) {
   try {
     const user = await prisma.user.create({
-      data: { email },
+      data: { email, name },
     });
     console.log("✅ User created:", user);
     if(!user)

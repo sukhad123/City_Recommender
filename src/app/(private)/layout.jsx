@@ -18,10 +18,11 @@ export default function RootLayout({ children }) {
     const checkUser = async () => {
       if (!auth.isLoading && auth.isAuthenticated) {
         const email = auth.user?.profile?.email;
+        const name = auth.user?.profile?.name;
         if (email) {
           let user = await findUserByEmail(email);
           if (!user) {
-            user = await createUser(email);
+            user = await createUser(email, name);
             console.log("Created new user:", user);
           } else {
             console.log("Found user:", user);
