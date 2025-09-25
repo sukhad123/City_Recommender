@@ -1,6 +1,5 @@
 
-import { PrismaClient } from "../app/db/generated/prisma";
-
+import { PrismaClient } from "@prisma/client";
 const globalForPrisma = globalThis;
 
 export const prisma =
