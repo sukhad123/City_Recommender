@@ -1,0 +1,50 @@
+generator client {
+  provider      = "prisma-client-js"
+  output        = "../src/app/db/generated/prisma"
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  reviews   Review[]
+}
+
+model Review {
+  id        String       @id @default(uuid())
+  comment   String
+  city      CanadianCity
+  userId    String
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  user      User         @relation(fields: [userId], references: [id])
+}
+
+enum CanadianCity {
+  Toronto
+  Montreal
+  Vancouver
+  Calgary
+  Edmonton
+  Ottawa
+  Winnipeg
+  Quebec_City
+  Hamilton
+  Kitchener
+  London
+  Victoria
+  Halifax
+  Oshawa
+  Windsor
+  Saskatoon
+  Regina
+  St_Johns
+  Kelowna
+}
