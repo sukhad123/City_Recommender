@@ -44,3 +44,5 @@ src/app/db/generated/prisma
 /node_modules/.prisma
 /prisma/generated
 src/db/generated
+
+/src/generated/prisma
