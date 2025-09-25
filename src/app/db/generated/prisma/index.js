@@ -166,10 +166,6 @@ const config = {
         "fromEnvVar": null,
         "value": "windows",
         "native": true
-      },
-      {
-        "fromEnvVar": null,
-        "value": "rhel-openssl-3.0.x"
       }
     ],
     "previewFeatures": [],
@@ -196,8 +192,8 @@ const config = {
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider      = \"prisma-client-js\"\n  output        = \"../src/app/db/generated/prisma\"\n  binaryTargets = [\"native\", \"rhel-openssl-3.0.x\"]\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id        String   @id @default(uuid())\n  email     String   @unique\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n  reviews   Review[]\n}\n\nmodel Review {\n  id        String       @id @default(uuid())\n  comment   String\n  city      CanadianCity\n  userId    String\n  createdAt DateTime     @default(now())\n  updatedAt DateTime     @updatedAt\n  user      User         @relation(fields: [userId], references: [id])\n}\n\nenum CanadianCity {\n  Toronto\n  Montreal\n  Vancouver\n  Calgary\n  Edmonton\n  Ottawa\n  Winnipeg\n  Quebec_City\n  Hamilton\n  Kitchener\n  London\n  Victoria\n  Halifax\n  Oshawa\n  Windsor\n  Saskatoon\n  Regina\n  St_Johns\n  Kelowna\n}\n",
-  "inlineSchemaHash": "50e11b542b32159271f4eb5d709651faaab22dece6c88b78de048b883d0d19ac",
+  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/app/db/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id        String   @id @default(uuid())\n  email     String   @unique\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n  reviews   Review[]\n}\n\nmodel Review {\n  id        String       @id @default(uuid())\n  comment   String\n  city      CanadianCity\n  userId    String\n  createdAt DateTime     @default(now())\n  updatedAt DateTime     @updatedAt\n  user      User         @relation(fields: [userId], references: [id])\n}\n\nenum CanadianCity {\n  Toronto\n  Montreal\n  Vancouver\n  Calgary\n  Edmonton\n  Ottawa\n  Winnipeg\n  Quebec_City\n  Hamilton\n  Kitchener\n  London\n  Victoria\n  Halifax\n  Oshawa\n  Windsor\n  Saskatoon\n  Regina\n  St_Johns\n  Kelowna\n}\n",
+  "inlineSchemaHash": "fc5d11d17af9e632f3db2d0035659057bfc4d13800d1c8a7b0c279e93860de3e",
   "copyEngine": true
 }
 
@@ -238,10 +234,6 @@ Object.assign(exports, Prisma)
 // file annotations for bundling tools to include these files
 path.join(__dirname, "query_engine-windows.dll.node");
 path.join(process.cwd(), "src/app/db/generated/prisma/query_engine-windows.dll.node")
-
-// file annotations for bundling tools to include these files
-path.join(__dirname, "libquery_engine-rhel-openssl-3.0.x.so.node");
-path.join(process.cwd(), "src/app/db/generated/prisma/libquery_engine-rhel-openssl-3.0.x.so.node")
 // file annotations for bundling tools to include these files
 path.join(__dirname, "schema.prisma");
 path.join(process.cwd(), "src/app/db/generated/prisma/schema.prisma")

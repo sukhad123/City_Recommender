@@ -28,7 +28,7 @@
     ".next/types/**/*.ts",
     "**/*.ts",
     "**/*.tsx"
-, "src/app/(private)/layout.jsx"  ],
+, "src/app/(private)/layout.jsx", "src/db/prisma.js"  ],
   "exclude": [
     "node_modules"
   ]
