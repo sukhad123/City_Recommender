@@ -68,3 +68,19 @@ export async function getUserNameByEmail(email) {
     return null;
   }
 }
+
+export async function deleteUserByEmail(email) {
+  try {
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      console.warn(`⚠️ No user found with email: ${email}`);
+      return false;
+    }
+    await prisma.user.delete({ where: { email } });
+    console.log(`✅ User and related reviews deleted for email: ${email}`);
+    return true;
+  } catch (error) {
+    console.error("❌ Error deleting user:", error);
+    return false;
+  }
+}
