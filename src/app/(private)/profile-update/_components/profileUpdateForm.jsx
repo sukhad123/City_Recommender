@@ -49,11 +49,15 @@ export default function ProfileForm({
             <Button
               color="primary"
               onPress={() => onSave(editName)}
-              isDisabled={isSaving}
+              isDisabled={isSaving || editName === name}
             >
               Save
             </Button>
-            <Button color="secondary" onPress={onCancel} isDisabled={isSaving}>
+            <Button
+              color="secondary"
+              onPress={onCancel}
+              isDisabled={isSaving || editName === name}
+            >
               Cancel
             </Button>
           </div>

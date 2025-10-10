@@ -8,7 +8,7 @@ import {
   UpdateUserAttributesCommand,
   DeleteUserCommand,
 } from "@aws-sdk/client-cognito-identity-provider";
-import { findUserByEmail, getUserNameByEmail, updateUserNameByEmail } from "../../../repositories/user";
+import { getUserNameByEmail, updateUserNameByEmail } from "../../../repositories/user";
 import { useRouter } from "next/navigation";
 
 const COGNITO_REGION = "us-east-2";
@@ -62,7 +62,6 @@ function ProfilePage() {
   const handleCancel = () => {
     setEditName(originalName);
     alert("Edit cancelled.");
-    router.push("/dashboard");
   };
 
   // Delete handler: remove Cognito user
