@@ -12,6 +12,7 @@
     "migrate": "node src/db/mongo.js"
   },
   "dependencies": {
+    "@aws-sdk/client-cognito-identity-provider": "^3.907.0",
     "@heroui/react": "^2.8.4",
     "@prisma/client": "^6.16.2",
     "@prisma/extension-accelerate": "^2.0.2",
