@@ -37,5 +37,34 @@ export async function findUserByEmail(email) {
   } catch (error) {
     console.error("❌ Error finding user:", error);
   }
+}
 
+export async function updateUserNameByEmail(email, newName) {
+  try {
+    const user = await prisma.user.update({
+      where: { email: email },
+      data: { name: newName },
+    });
+    return user;
+  } catch (error) {
+    console.error("Error updating user name in DB:", error);
+  }
+}
+
+export async function getUserNameByEmail(email) {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { email },
+      select: { name: true },
+    });
+
+    if (!user) {
+      console.warn(`⚠️ No user found with email: ${email}`);
+      return null;
+    }
+    return user.name;
+  } catch (error) {
+    console.error("❌ Error fetching user name:", error);
+    return null;
+  }
 }
