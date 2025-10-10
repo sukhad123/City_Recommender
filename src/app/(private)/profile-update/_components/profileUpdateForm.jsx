@@ -8,14 +8,13 @@ import {
 } from "@heroui/react";
 
 export default function ProfileForm({
-  email,
-  name,
-  editName,
-  setEditName,
+  formData,
+  setFormData,
   onSave,
   onCancel,
   onDelete,
   isSaving,
+  isFormUnchanged
 }) {
   return (
     <div className="flex items-center justify-center min-h-screen p-6">
@@ -28,7 +27,7 @@ export default function ProfileForm({
             <label className="block text-sm font-medium mb-1">Email</label>
             <Input
               type="email"
-              value={email}
+              value={formData.email}
               disabled
               className="w-full text-gray-500 cursor-not-allowed"
             />
@@ -37,8 +36,8 @@ export default function ProfileForm({
             <label className="block text-sm font-medium mb-1">Name</label>
             <Input
               type="text"
-              value={editName}
-              onChange={(e) => setEditName(e.target.value)}
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               className="w-full"
               disabled={isSaving}
             />
@@ -48,15 +47,15 @@ export default function ProfileForm({
           <div className="flex flex-row space-x-2">
             <Button
               color="primary"
-              onPress={() => onSave(editName)}
-              isDisabled={isSaving || editName === name}
+              onPress={onSave}
+              isDisabled={isSaving || isFormUnchanged}
             >
               Save
             </Button>
             <Button
               color="secondary"
               onPress={onCancel}
-              isDisabled={isSaving || editName === name}
+              isDisabled={isSaving || isFormUnchanged}
             >
               Cancel
             </Button>

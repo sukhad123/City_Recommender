@@ -8,25 +8,25 @@ import {
   UpdateUserAttributesCommand,
   DeleteUserCommand,
 } from "@aws-sdk/client-cognito-identity-provider";
-import { getUserNameByEmail, updateUserNameByEmail } from "../../../repositories/user";
-import { useRouter } from "next/navigation";
+import {
+  getUserNameByEmail,
+  updateUserNameByEmail,
+} from "../../../repositories/user";
 
 const COGNITO_REGION = "us-east-2";
 
 function ProfilePage() {
   const user = useAuthInfo();
-  const [editName, setEditName] = useState("");
-  const [originalName, setOriginalName] = useState("");
+  const [originalData, setOriginalData] = useState({ name: "", email: "" });
+  const [formData, setFormData] = useState({ name: "", email: "" });
   const [isSaving, setIsSaving] = useState(false);
-  const router = useRouter();
 
-  // Initialize original and editable name after authentication
   useEffect(() => {
     async function fetchLatestUser() {
-      // Fetch from DB using email, or from Cognito
+      // Fetch user details from DB
       const latestName = await getUserNameByEmail(user.email);
-      setOriginalName(latestName || "");
-      setEditName(latestName || "");
+      setOriginalData({ name: latestName || "", email: user.email });
+      setFormData({ name: latestName || "", email: user.email });
     }
     if (user && user.email) {
       fetchLatestUser();
@@ -34,6 +34,10 @@ function ProfilePage() {
   }, [user?.email]);
 
   if (!user) return <div>Loading...</div>;
+
+  const isFormUnchanged = Object.keys(originalData).every(
+    key => originalData[key] === formData[key]
+  );
 
   // Save handler: update Cognito "name" attribute & update in DB
   const handleSave = async (newName) => {
@@ -44,13 +48,11 @@ function ProfilePage() {
       });
       const command = new UpdateUserAttributesCommand({
         AccessToken: user.accessToken,
-        UserAttributes: [{ Name: "name", Value: newName }],
+        UserAttributes: [{ Name: "name", Value: formData.name }],
       });
       await client.send(command);
-      setOriginalName(newName);
-      setEditName(newName);
-      updateUserNameByEmail(user.email, newName);
-      user.name = newName;
+      await updateUserNameByEmail(user.email, formData.name);
+      setOriginalData({ ...formData });
       alert("Name updated successfully!");
     } catch (error) {
       alert("Failed to update Name in Cognito.");
@@ -60,7 +62,7 @@ function ProfilePage() {
 
   // Cancel handler: revert UI state
   const handleCancel = () => {
-    setEditName(originalName);
+    setFormData({ ...originalData });
     alert("Edit cancelled.");
   };
 
@@ -91,14 +93,13 @@ function ProfilePage() {
 
   return (
     <ProfileForm
-      email={user.email}
-      name={originalName}
-      editName={editName}
-      setEditName={setEditName}
+      formData={formData}
+      setFormData={setFormData}
       onSave={handleSave}
       onCancel={handleCancel}
       onDelete={handleDelete}
       isSaving={isSaving}
+      isFormUnchanged={isFormUnchanged}
     />
   );
 }
