@@ -9,7 +9,7 @@ export function InitializeAWSCognito() {
       client_id: appClientId,
       redirect_uri: redirectSignIn,
       response_type: "code",
-      scope: "email openid profile",
+      scope: "email openid profile aws.cognito.signin.user.admin",
     };
     return cognitoAuthConfig;
   } catch (error) {}
