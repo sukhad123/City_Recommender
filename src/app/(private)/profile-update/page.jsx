@@ -9,9 +9,13 @@ import {
   DeleteUserCommand,
 } from "@aws-sdk/client-cognito-identity-provider";
 import {
+    deleteUserByEmail,
   getUserNameByEmail,
   updateUserNameByEmail,
 } from "../../../repositories/user";
+
+import { useRouter } from "next/navigation";
+import { deleteReviewsByEmail } from "../../../repositories/review";
 
 const COGNITO_REGION = "us-east-2";
 
@@ -20,6 +24,7 @@ function ProfilePage() {
   const [originalData, setOriginalData] = useState({ name: "", email: "" });
   const [formData, setFormData] = useState({ name: "", email: "" });
   const [isSaving, setIsSaving] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     async function fetchLatestUser() {
@@ -82,8 +87,10 @@ function ProfilePage() {
           AccessToken: user.accessToken,
         });
         await client.send(command);
-        alert("Profile deleted from Cognito.");
-        // Optionally redirect or log out here
+        deleteReviewsByEmail(user.email);
+        deleteUserByEmail(user.email);
+        alert("Profile deleted");
+        router.push('/');
       } catch (error) {
         alert("Failed to delete profile from Cognito.");
       }
