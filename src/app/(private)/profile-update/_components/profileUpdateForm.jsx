@@ -6,6 +6,8 @@ import {
   Button,
   Input,
 } from "@heroui/react";
+import { CircleUser } from "lucide-react";
+import { useRef } from "react";
 
 export default function ProfileForm({
   formData,
@@ -14,8 +16,46 @@ export default function ProfileForm({
   onCancel,
   onDelete,
   isSaving,
-  isFormUnchanged
+  isFormUnchanged,
+  onImageUpload,
 }) {
+  const fileInput = useRef();
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Frontend validation
+    if (
+      !["image/jpg", "image/jpeg", "image/png"].includes(file.type) ||
+      file.size > 2 * 1024 * 1024
+    ) {
+      alert("Only JPEG/PNG images under 2MB are allowed.");
+      return;
+    }
+
+    // Upload to backend
+    const formDataObj = new FormData();
+    formDataObj.append("file", file);
+    formDataObj.append("email", formData.email);
+    let res = null;
+    try {
+      res = await fetch("/api/upload-profile-image", {
+        method: "POST",
+        body: formDataObj,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+
+    if (res.ok) {
+      const { url } = await res.json();
+      onImageUpload(url);
+    } else {
+      alert("Image upload failed.");
+    }
+  };
+
   return (
     <div className="flex items-center justify-center min-h-screen p-6">
       <Card className="max-w-md w-full shadow-lg">
@@ -23,6 +63,26 @@ export default function ProfileForm({
           <h1 className="text-2xl font-bold">Profile</h1>
         </CardHeader>
         <CardBody className="space-y-4">
+          <div className="flex flex-col items-center">
+            {formData.profileImageUrl ? (
+              <img
+                src={formData.profileImageUrl}
+                className="w-24 h-24 rounded-full object-cover mb-2"
+              />
+            ) : (
+              <CircleUser className="w-24 h-24 text-gray-400 mb-2" />
+            )}
+            <input
+              type="file"
+              accept="image/jpeg,image/png"
+              ref={fileInput}
+              style={{ display: "none" }}
+              onChange={handleFileChange}
+            />
+            <Button color="primary" onPress={() => fileInput.current.click()}>
+              Upload/Replace Photo
+            </Button>
+          </div>
           <div>
             <label className="block text-sm font-medium mb-1">Email</label>
             <Input
@@ -37,7 +97,9 @@ export default function ProfileForm({
             <Input
               type="text"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
               className="w-full"
               disabled={isSaving}
             />
