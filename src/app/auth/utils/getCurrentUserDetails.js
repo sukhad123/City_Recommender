@@ -11,6 +11,7 @@ export function useAuthInfo() {
 
   return {
     email: auth.user.profile?.email,
+    name: auth.user.profile?.name,
     idToken: auth.user.id_token,
     accessToken: auth.user.access_token,
     refreshToken: auth.user.refresh_token,

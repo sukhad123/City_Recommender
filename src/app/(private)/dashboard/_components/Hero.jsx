@@ -6,8 +6,10 @@ import {
   CardFooter,
   Button
 } from "@heroui/react";
+import { useRouter } from "next/navigation";
 
 export default function Hero({email}) {
+  const router = useRouter();
   return (
     <div className="flex items-center justify-center min-h-screen  p-6">
       <Card className="max-w-md w-full shadow-lg">
@@ -23,9 +25,12 @@ export default function Hero({email}) {
           </p>
         </CardBody>
 
-        <CardFooter className="flex flex-col space-y-3">
+        <CardFooter className="flex flex-row space-x-3 justify-center">
           <Button color="primary" onPress={() => alert("City search coming soon!")}>
             Find My City
+          </Button>
+          <Button color="secondary" onPress={() => router.push("/profile-update")}>
+            Update Profile
           </Button>
         </CardFooter>
       </Card>

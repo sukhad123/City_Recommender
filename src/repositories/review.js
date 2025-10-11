@@ -35,3 +35,19 @@ export async function getAllReviews() {
     }
   });
 }
+
+export async function deleteReviewsByEmail(email) {
+  try {
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      console.warn(`⚠️ No user found with email: ${email}`);
+      return false;
+    }
+    const result = await prisma.review.deleteMany({ where: { userId: user.id } });
+    console.log(`✅ Deleted ${result.count} review(s) for user: ${email}`);
+    return true;
+  } catch (error) {
+    console.error("❌ Error deleting reviews:", error);
+    return false;
+  }
+}
