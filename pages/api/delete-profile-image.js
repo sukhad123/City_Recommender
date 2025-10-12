@@ -4,7 +4,7 @@ export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
-  const { email, s3Key } = req.body;
+  const { s3Key } = req.body;
 
   // Delete from S3
   const s3 = new S3Client({
