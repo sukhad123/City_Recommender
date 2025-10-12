@@ -53,6 +53,7 @@ export default function ProfileForm({
     if (res.ok) {
       const { url } = await res.json();
       onImageUpload(url);
+      e.target.value = "";
     } else {
       alert("Image upload failed.");
     }
