@@ -96,3 +96,15 @@ export async function updateProfileImageByEmail(email, profileImage) {
     console.error("Error updating profile image url in DB:", error);
   }
 }
+
+export async function deleteProfileImageByEmail(email) {
+  try {
+    const user = await prisma.user.update({
+      where: { email: email },
+      data: { profileImageUrl: null },
+    });
+    return user;
+  } catch (error) {
+    console.error("Error updating profile image url in DB:", error);
+  }
+}
