@@ -23,7 +23,7 @@ export default async function handler(req, res) {
             file = file[0];
         }
         const mimetype = file.mimetype || file.type;
-        const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
+        const allowedTypes = ["image/jpeg", "image/png"];
 
         if (!file) {
             return res.status(400).json({ error: "No file uploaded" });

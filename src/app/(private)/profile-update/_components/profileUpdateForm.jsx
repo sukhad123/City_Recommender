@@ -29,7 +29,7 @@ export default function ProfileForm({
 
     // Frontend validation
     if (
-      !["image/jpg", "image/jpeg", "image/png"].includes(file.type) ||
+      !["image/jpeg", "image/png"].includes(file.type) ||
       file.size > 2 * 1024 * 1024
     ) {
       alert("Only JPEG/PNG images under 2MB are allowed.");
