@@ -49,7 +49,7 @@ export default async function handler(req, res) {
             Body: fileStream,
             ContentType: mimetype,
         }));
-        const s3Url = `https://user-profile-images-city-recommender.s3.us-east-2.amazonaws.com/${s3Key}`;
-        res.status(200).json({ url: s3Url });
+        //const s3Url = `https://user-profile-images-city-recommender.s3.us-east-2.amazonaws.com/${s3Key}`;
+        res.status(200).json({ url: s3Key });
     });
 }
