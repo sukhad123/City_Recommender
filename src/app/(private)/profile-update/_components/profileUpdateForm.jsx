@@ -18,6 +18,8 @@ export default function ProfileForm({
   isSaving,
   isFormUnchanged,
   onImageUpload,
+  signedImageUrl,
+  handleDeleteImage,
 }) {
   const fileInput = useRef();
 
@@ -64,9 +66,9 @@ export default function ProfileForm({
         </CardHeader>
         <CardBody className="space-y-4">
           <div className="flex flex-col items-center">
-            {formData.profileImageUrl ? (
+            {signedImageUrl ? (
               <img
-                src={formData.profileImageUrl}
+                src={signedImageUrl}
                 className="w-24 h-24 rounded-full object-cover mb-2"
               />
             ) : (
@@ -79,9 +81,15 @@ export default function ProfileForm({
               style={{ display: "none" }}
               onChange={handleFileChange}
             />
-            <Button color="primary" onPress={() => fileInput.current.click()}>
-              Upload/Replace Photo
-            </Button>
+            <div className="flex flex-row space-x-3 mt-2">
+              <Button color="primary" onPress={() => fileInput.current.click()}>
+                Upload/Replace
+              </Button>
+              <Button color="danger" onPress={handleDeleteImage} isDisabled={!formData.profileImageUrl || isSaving}
+              >
+                Delete Image
+              </Button>
+            </div>
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">Email</label>

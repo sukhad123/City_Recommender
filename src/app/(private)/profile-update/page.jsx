@@ -9,6 +9,7 @@ import {
   DeleteUserCommand,
 } from "@aws-sdk/client-cognito-identity-provider";
 import {
+  deleteProfileImageByEmail,
   deleteUserByEmail,
   getUserByEmail,
   updateProfileImageByEmail,
@@ -17,6 +18,7 @@ import {
 
 import { useRouter } from "next/navigation";
 import { deleteReviewsByEmail } from "../../../repositories/review";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 const COGNITO_REGION = "us-east-2";
 
@@ -34,6 +36,7 @@ function ProfilePage() {
   });
   const [isSaving, setIsSaving] = useState(false);
   const router = useRouter();
+  const [signedImageUrl, setSignedImageUrl] = useState("");
 
   useEffect(() => {
     async function fetchLatestUser() {
@@ -48,7 +51,11 @@ function ProfilePage() {
         email: user.email,
         profileImageUrl: latestUser?.profileImageUrl || "",
       });
-      console.log(`URL: ${latestUser.profileImageUrl}`)
+      if (latestUser?.profileImageUrl) {
+        await fetchSignedImageUrl(latestUser.profileImageUrl);
+      } else {
+        setSignedImageUrl("");
+      }
     }
     if (user && user.email) fetchLatestUser();
   }, [user?.email]);
@@ -91,6 +98,7 @@ function ProfilePage() {
     } catch (error) {
       alert("Failed to update profile picture in database.");
     }
+    await fetchSignedImageUrl(url);
   };
 
   // Cancel handler: revert UI state
@@ -126,6 +134,42 @@ function ProfilePage() {
     }
   };
 
+  async function fetchSignedImageUrl(s3Key) {
+    const res = await fetch(
+      `/api/get-profile-image-url?key=${encodeURIComponent(s3Key)}`
+    );
+    if (res.ok) {
+      const { url } = await res.json();
+      setSignedImageUrl(url);
+    }
+  }
+
+  const handleDeleteImage = async () => {
+    if (!formData.profileImageUrl) return;
+    setIsSaving(true);
+    try {
+      const res = await fetch("/api/delete-profile-image", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: formData.email,
+          s3Key: formData.profileImageUrl,
+        }),
+      });
+      if (res.ok) {
+        setFormData((prev) => ({ ...prev, profileImageUrl: "" }));
+        setSignedImageUrl("");
+        deleteProfileImageByEmail(formData.email);
+        alert("Profile image deleted.");
+      } else {
+        alert("Failed to delete image.");
+      }
+    } catch (error) {
+      alert("Failed to delete image.");
+    }
+    setIsSaving(false);
+  };
+
   return (
     <ProfileForm
       formData={formData}
@@ -136,6 +180,8 @@ function ProfilePage() {
       isSaving={isSaving}
       isFormUnchanged={isFormUnchanged}
       onImageUpload={handleImageUpload}
+      signedImageUrl={signedImageUrl}
+      handleDeleteImage={handleDeleteImage}
     />
   );
 }
