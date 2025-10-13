@@ -7,12 +7,13 @@ import NavbarComponent from "../components/composite/Navbar";
 import { authenticatedMenuItems } from "../../constants/Navbar/constants";
 
 // import server actions
-import { findUserByEmail, createUser } from "../../repositories/user";
+import { findUserByEmail, createUser, getProfileImageByEmail } from "../../repositories/user";
 
 export default function RootLayout({ children }) {
   const router = useRouter();
   const auth = useAuth();
   const [loading, setLoading] = useState(true);
+  const [userInfo, setUserInfo] = useState({ name: "", image: "" });
 
   useEffect(() => {
     const checkUser = async () => {
@@ -27,6 +28,21 @@ export default function RootLayout({ children }) {
           } else {
             console.log("Found user:", user);
           }
+
+          let image = "";
+          const userProfileImage = await getProfileImageByEmail(email)
+          if (userProfileImage?.profileImageUrl) {
+            const res = await fetch(
+              `/api/get-profile-image-url?key=${encodeURIComponent(
+                userProfileImage.profileImageUrl
+              )}`
+            );
+            if (res.ok) {
+              const data = await res.json();
+              image = data.url;
+            }
+          }
+          setUserInfo({ name, image });
         }
         setLoading(false);
       } else if (!auth.isLoading && !auth.isAuthenticated) {
@@ -40,10 +56,7 @@ export default function RootLayout({ children }) {
   if (loading) return null;
 
   return (
-    <NavbarComponent
-      isAuthenticated={true}
-      menuItems={authenticatedMenuItems}
-    >
+    <NavbarComponent isAuthenticated={true} menuItems={authenticatedMenuItems} userInfo={userInfo}>
       {children}
     </NavbarComponent>
   );

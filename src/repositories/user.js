@@ -85,6 +85,18 @@ export async function deleteUserByEmail(email) {
   }
 }
 
+export async function getProfileImageByEmail(email) {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { email: email },
+      select: { profileImageUrl: true },
+    });
+    return user;
+  } catch (error) {
+    console.error("Error updating profile image url in DB:", error);
+  }
+}
+
 export async function updateProfileImageByEmail(email, profileImage) {
   try {
     const user = await prisma.user.update({
