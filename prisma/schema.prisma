@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  
 }
 
 datasource db {
@@ -15,12 +14,15 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  name      String?
-  email     String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  reviews   Review[]
+  id              String               @id @default(uuid())
+  email           String               @unique
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+  name            String?
+  profileImageUrl String?
+  reviews         Review[]
+  preferences     UserPreferences?
+  recommendations CityRecommendation[]
 }
 
 model Review {
@@ -53,4 +55,113 @@ enum CanadianCity {
   Regina
   St_Johns
   Kelowna
+}
+
+enum JobField {
+  tech
+  finance
+  healthcare
+  construction
+  education
+  engineering
+  logistics
+  retail
+  business_admin
+  hospitality
+  marketing
+  legal
+  manufacturing
+  agriculture
+  real_estate
+  government
+  student
+  retired
+}
+
+enum CostOfLiving {
+  Low
+  Medium
+  High
+}
+
+enum WeatherPreference {
+  Cold
+  Moderate
+  Warm
+}
+
+enum Province {
+  AB
+  BC
+  MB
+  NB
+  NL
+  NS
+  ON
+  PE
+  QC
+  SK
+}
+
+enum LifeStage {
+  Student
+  Family
+  Professional
+  Retiree
+}
+
+enum LanguagePreference {
+  English
+  French
+  Bilingual
+}
+
+enum ImmigrationStatus {
+  PR
+  Student_Visa
+  Work_Permit
+  New_Immigrant
+}
+
+enum CitySize {
+  Small
+  Medium
+  Large
+}
+
+model UserPreferences {
+  id                String             @id @default(uuid())
+  userId            String             @unique
+  jobField          JobField
+  costOfLiving      CostOfLiving
+  rentalPrice       Int?
+  weather           WeatherPreference
+  province          Province?
+  lifeStage         LifeStage
+  language          LanguagePreference
+  immigrationStatus ImmigrationStatus
+  citySize          CitySize?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([jobField])
+  @@index([province])
+}
+
+model CityRecommendation {
+  id          String   @id @default(uuid())
+  userId      String
+  city        String
+  province    String
+  score       Float
+  rank        Int
+  generatedAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, city])
+  @@unique([userId, rank])
+  @@index([userId, rank])
 }
