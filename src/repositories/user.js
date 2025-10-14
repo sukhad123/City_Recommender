@@ -51,18 +51,18 @@ export async function updateUserNameByEmail(email, newName) {
   }
 }
 
-export async function getUserNameByEmail(email) {
+export async function getUserByEmail(email) {
   try {
     const user = await prisma.user.findUnique({
       where: { email },
-      select: { name: true },
+      select: { name: true, profileImageUrl: true },
     });
 
     if (!user) {
       console.warn(`⚠️ No user found with email: ${email}`);
       return null;
     }
-    return user.name;
+    return user;
   } catch (error) {
     console.error("❌ Error fetching user name:", error);
     return null;
@@ -82,5 +82,41 @@ export async function deleteUserByEmail(email) {
   } catch (error) {
     console.error("❌ Error deleting user:", error);
     return false;
+  }
+}
+
+export async function getProfileImageByEmail(email) {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { email: email },
+      select: { profileImageUrl: true },
+    });
+    return user;
+  } catch (error) {
+    console.error("Error updating profile image url in DB:", error);
+  }
+}
+
+export async function updateProfileImageByEmail(email, profileImage) {
+  try {
+    const user = await prisma.user.update({
+      where: { email: email },
+      data: { profileImageUrl: profileImage },
+    });
+    return user;
+  } catch (error) {
+    console.error("Error updating profile image url in DB:", error);
+  }
+}
+
+export async function deleteProfileImageByEmail(email) {
+  try {
+    const user = await prisma.user.update({
+      where: { email: email },
+      data: { profileImageUrl: null },
+    });
+    return user;
+  } catch (error) {
+    console.error("Error updating profile image url in DB:", error);
   }
 }
