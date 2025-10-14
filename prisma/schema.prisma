@@ -170,7 +170,6 @@ model CityDetails {
   id                   String   @id @default(uuid())
   city                 String
   province             Province
-  slug                 String   @unique
   imageKey             String?
   gallery              Json?
   jobOpportunities     Json?
