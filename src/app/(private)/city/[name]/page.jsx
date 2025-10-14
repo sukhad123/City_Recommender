@@ -1,21 +1,13 @@
 // src/app/(private)/city/[name]/page.jsx
 import {
-  getCityDetailsBySlugOrName,
-  getCitySectionsBySlug,
+  getCityDetailsByName,
+  getCitySectionsByName,
 } from "../../../../repositories/cityDetails";
 
+// env for your CDN/S3 base (optional)
 const CDN_BASE = process.env.NEXT_PUBLIC_CITIES_CDN_BASE;
 
-function slugifyCity(name) {
-  return (name || "")
-    .normalize("NFKD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/&/g, "and")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
-
+/** Placeholder data when DB has no row yet. */
 function getPlaceholders(cityName) {
   const nice = cityName || "This City";
   return {
@@ -93,6 +85,7 @@ function getPlaceholders(cityName) {
   };
 }
 
+/** Build an image URL using S3/CDN if imageKey exists, else Unsplash fallback */
 function resolveHeroImage(city, province, imageKey) {
   if (CDN_BASE && imageKey) return `${CDN_BASE}/${imageKey}`;
   const display = city?.replace(/_/g, " ") || "Canada";
@@ -101,25 +94,29 @@ function resolveHeroImage(city, province, imageKey) {
   )}`;
 }
 
-// co-located UI parts
+// UI components
 import CityHeader from "./_components/CityHeader";
 import InfoSection from "./_components/InfoSection";
 import KeyValueList from "./_components/KeyValueList";
 import PillList from "./_components/PillList";
 
-export default async function CityInfoPage({ params }) {
-  // ⬇️ IMPORTANT: await params before using it
+export default async function CityInfoPage({ params, searchParams }) {
+  // Next “dynamic params” are thenable, so await first
   const awaited = await params;
   const rawParam = Array.isArray(awaited?.name)
     ? awaited.name[0]
     : awaited?.name;
   const cityName = decodeURIComponent(rawParam || "").replace(/_/g, " ");
 
-  const bySlug = await getCitySectionsBySlug(slugifyCity(cityName));
-  const details =
-    bySlug ||
-    (await getCityDetailsBySlugOrName(cityName)) ||
-    getPlaceholders(cityName);
+  // Optional disambiguation via query: /city/Toronto?province=ON
+  const province = searchParams?.province ?? undefined;
+
+  // Try DB by city + optional province (no slug)
+  const fromDb =
+    (await getCitySectionsByName(cityName, province)) ||
+    (await getCityDetailsByName(cityName, province));
+
+  const details = fromDb || getPlaceholders(cityName);
 
   const heroSrc = resolveHeroImage(
     details.city || cityName,
@@ -151,7 +148,7 @@ export default async function CityInfoPage({ params }) {
         imageUrl={heroSrc}
       />
 
-      {/* Sections (unchanged) */}
+      {/* Job Opportunities */}
       <InfoSection title="Job Opportunities" subtitle="Industries & demand">
         <div className="grid gap-4 md:grid-cols-2">
           <div>
@@ -174,6 +171,7 @@ export default async function CityInfoPage({ params }) {
         </div>
       </InfoSection>
 
+      {/* Cost of Living */}
       <InfoSection title="Cost of Living" subtitle="Monthly estimates">
         <KeyValueList
           items={[
@@ -200,6 +198,7 @@ export default async function CityInfoPage({ params }) {
         )}
       </InfoSection>
 
+      {/* Weather */}
       <InfoSection title="Weather">
         <KeyValueList
           items={[
@@ -223,6 +222,7 @@ export default async function CityInfoPage({ params }) {
         />
       </InfoSection>
 
+      {/* Rent */}
       <InfoSection title="Average Rent Prices">
         <KeyValueList
           items={[
@@ -246,6 +246,7 @@ export default async function CityInfoPage({ params }) {
         />
       </InfoSection>
 
+      {/* Real Estate */}
       <InfoSection title="Real Estate Outlook">
         <KeyValueList
           items={[
@@ -265,6 +266,7 @@ export default async function CityInfoPage({ params }) {
         />
       </InfoSection>
 
+      {/* Quality of Life */}
       <InfoSection title="Quality of Life">
         <KeyValueList
           items={[
@@ -280,6 +282,7 @@ export default async function CityInfoPage({ params }) {
         />
       </InfoSection>
 
+      {/* Education */}
       <InfoSection title="Education Facilities">
         {Array.isArray(edu.schoolBoards) && edu.schoolBoards.length > 0 && (
           <>
@@ -302,6 +305,7 @@ export default async function CityInfoPage({ params }) {
         ) : null}
       </InfoSection>
 
+      {/* Healthcare */}
       <InfoSection title="Healthcare Access">
         <KeyValueList
           items={[
@@ -333,6 +337,7 @@ export default async function CityInfoPage({ params }) {
         )}
       </InfoSection>
 
+      {/* Community Integration */}
       <InfoSection title="Community Integration">
         <div className="grid gap-4 md:grid-cols-3">
           <div>
@@ -350,6 +355,7 @@ export default async function CityInfoPage({ params }) {
         </div>
       </InfoSection>
 
+      {/* Immigration Support */}
       <InfoSection title="Immigration Support">
         <KeyValueList
           items={[
@@ -370,6 +376,7 @@ export default async function CityInfoPage({ params }) {
         </div>
       </InfoSection>
 
+      {/* Safety */}
       <InfoSection title="Safety / Crime Rates">
         <KeyValueList
           items={[
@@ -391,6 +398,7 @@ export default async function CityInfoPage({ params }) {
         )}
       </InfoSection>
 
+      {/* Transportation */}
       <InfoSection title="Transportation">
         <KeyValueList
           items={[
@@ -417,6 +425,7 @@ export default async function CityInfoPage({ params }) {
         )}
       </InfoSection>
 
+      {/* Internet & Tech */}
       <InfoSection title="Internet & Tech Access">
         <KeyValueList
           items={[
@@ -436,6 +445,7 @@ export default async function CityInfoPage({ params }) {
         />
       </InfoSection>
 
+      {/* Outdoor & Lifestyle */}
       <InfoSection title="Outdoor & Lifestyle">
         <KeyValueList
           items={[
@@ -466,6 +476,7 @@ export default async function CityInfoPage({ params }) {
         )}
       </InfoSection>
 
+      {/* Demographics */}
       <InfoSection title="Demographics Snapshot">
         <KeyValueList
           items={[

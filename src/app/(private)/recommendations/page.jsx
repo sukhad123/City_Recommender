@@ -45,8 +45,12 @@ export default function RecommendationsPage() {
   }
 
   const handleCityClick = (name) => {
-    const displayName = name.replace(/_/g, " ");
-    router.push(`/city/${encodeURIComponent(displayName)}`);
+    // name = city, province optional (e.g., "Toronto", "ON")
+    const displayName = name.city.replace(/_/g, " ");
+    const q = name.province
+      ? `?province=${encodeURIComponent(name.province)}`
+      : "";
+    router.push(`/city/${encodeURIComponent(displayName)}${q}`);
   };
 
   // simple image resolver for now (Unsplash). swap later for S3/CDN.

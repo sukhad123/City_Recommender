@@ -17,7 +17,7 @@ export default function RecommendationsGrid({
           score={r.score}
           rank={r.rank}
           imageUrl={getImageUrl(r.city, r.province)}
-          onPress={() => onCityClick(r.city)}
+          onPress={() => onCityClick({ city: r.city, province: r.province })}
         />
       ))}
     </div>
