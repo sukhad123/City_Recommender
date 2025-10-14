@@ -21,14 +21,17 @@
       {
         "name": "next"
       }
-    ]
+    ],
+    "strictNullChecks": true
   },
   "include": [
     "next-env.d.ts",
     ".next/types/**/*.ts",
     "**/*.ts",
-    "**/*.tsx"
-, "src/app/(private)/layout.jsx", "src/db/prisma.js"  ],
+    "**/*.tsx",
+    "src/app/(private)/layout.jsx",
+    "src/db/prisma.js"
+  ],
   "exclude": [
     "node_modules"
   ]

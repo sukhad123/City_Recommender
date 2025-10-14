@@ -8,15 +8,14 @@ datasource db {
 }
 
 model User {
-
-  id              String   @id @default(uuid())
-  email           String   @unique
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id              String               @id @default(uuid())
+  email           String               @unique
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
   name            String?
   profileImageUrl String?
   reviews         Review[]
-  preferences UserPreferences?
+  preferences     UserPreferences?
   recommendations CityRecommendation[]
 }
 
@@ -125,40 +124,67 @@ enum CitySize {
 }
 
 model UserPreferences {
-  id                 String             @id @default(uuid())
-  userId             String             @unique
-  jobField           JobField
-  costOfLiving       CostOfLiving
-  rentalPrice        Int?
-  weather            WeatherPreference
-  province           Province?
-  lifeStage          LifeStage
-  language           LanguagePreference
-  immigrationStatus  ImmigrationStatus
-  citySize          CitySize? 
-  createdAt          DateTime           @default(now())
-  updatedAt          DateTime           @updatedAt
+  id                String             @id @default(uuid())
+  userId            String             @unique
+  jobField          JobField
+  costOfLiving      CostOfLiving
+  rentalPrice       Int?
+  weather           WeatherPreference
+  province          Province?
+  lifeStage         LifeStage
+  language          LanguagePreference
+  immigrationStatus ImmigrationStatus
+  citySize          CitySize?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
 
-  user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([jobField])
   @@index([province])
 }
 
 model CityRecommendation {
-  id          String         @id @default(uuid())
+  id          String   @id @default(uuid())
   userId      String
   city        String
   province    String
   score       Float
   rank        Int
-  generatedAt DateTime       @default(now())
+  generatedAt DateTime @default(now())
 
-  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, city])   
-  @@unique([userId, rank])  
+  @@unique([userId, city])
+  @@unique([userId, rank])
   @@index([userId, rank])
 }
 
+model CityDetails {
+  id                   String   @id @default(uuid())
+  city                 String
+  province             Province
+  imageKey             String?
+  gallery              Json?
+  jobOpportunities     Json?
+  costOfLiving         Json?
+  weather              Json?
+  rent                 Json?
+  realEstate           Json?
+  qualityOfLife        Json?
+  education            Json?
+  healthcare           Json?
+  communityIntegration Json?
+  immigrationSupport   Json?
+  safetyCrime          Json?
+  transportation       Json?
+  internetTech         Json?
+  outdoorLifestyle     Json?
+  demographics         Json?
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([city, province]) // convenient lookup by name + province
+  @@index([province])
+}
