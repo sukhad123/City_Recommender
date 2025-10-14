@@ -165,3 +165,33 @@ model CityRecommendation {
   @@unique([userId, rank])
   @@index([userId, rank])
 }
+
+model CityDetails {
+  id                   String   @id @default(uuid())
+  city                 String
+  province             Province
+  slug                 String   @unique
+  imageKey             String?
+  gallery              Json?
+  jobOpportunities     Json?
+  costOfLiving         Json?
+  weather              Json?
+  rent                 Json?
+  realEstate           Json?
+  qualityOfLife        Json?
+  education            Json?
+  healthcare           Json?
+  communityIntegration Json?
+  immigrationSupport   Json?
+  safetyCrime          Json?
+  transportation       Json?
+  internetTech         Json?
+  outdoorLifestyle     Json?
+  demographics         Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([city, province]) // convenient lookup by name + province
+  @@index([province])
+}
