@@ -19,6 +19,7 @@ export default function NavbarComponent({
   menuItems,
   isAuthenticated,
   children,
+  userInfo,
 }) {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const auth = useAuth();
@@ -51,6 +52,20 @@ export default function NavbarComponent({
                 <Link href={item.link}>{item.label}</Link>
               </NavbarItem>
             ))}
+            <div className="flex items-center ml-4 space-x-2">
+              {userInfo?.image ? (
+                <img
+                  src={userInfo.image}
+                  className="w-9 h-9 rounded-full object-cover border border-gray-300"
+                  alt={userInfo.name || "Profile"}
+                />
+              ) : (
+                <div className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold">
+                  {userInfo?.name ? userInfo.name.charAt(0).toUpperCase() : ""}
+                </div>
+              )}
+              <span className="font-medium">{userInfo?.name}</span>
+            </div>
             <Button
               onPress={() => {
                 auth.removeUser();

@@ -7,6 +7,7 @@ import {
   Button
 } from "@heroui/react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function Hero({email}) {
   const router = useRouter();
@@ -32,6 +33,9 @@ export default function Hero({email}) {
           <Button color="secondary" onPress={() => router.push("/profile-update")}>
             Update Profile
           </Button>
+            <Link href="/userPreferences">
+            <Button color="success">User Preferences</Button>
+          </Link>
         </CardFooter>
       </Card>
     </div>

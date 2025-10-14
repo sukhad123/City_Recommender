@@ -6,6 +6,7 @@ import  {Card, CardBody } from "@heroui/react";
 import { Building2, Briefcase, GraduationCap, HeartPulse, Users } from "lucide-react";
 import SignSignInButton from "./auth/utils/signIn"
 import SignInButton from "./auth/utils/signIn";
+import AboutSection from "./components/AboutUs"
 export default function Home() {
   return (
     <>
@@ -88,7 +89,7 @@ export default function Home() {
           </CardBody>
         </Card>
       </div>
-
+ 
       <Footer />
       </NavbarComponent>
     </>

@@ -9,39 +9,61 @@ import {
   DeleteUserCommand,
 } from "@aws-sdk/client-cognito-identity-provider";
 import {
-    deleteUserByEmail,
-  getUserNameByEmail,
+  deleteProfileImageByEmail,
+  deleteUserByEmail,
+  getUserByEmail,
+  updateProfileImageByEmail,
   updateUserNameByEmail,
 } from "../../../repositories/user";
 
 import { useRouter } from "next/navigation";
 import { deleteReviewsByEmail } from "../../../repositories/review";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 const COGNITO_REGION = "us-east-2";
 
 function ProfilePage() {
   const user = useAuthInfo();
-  const [originalData, setOriginalData] = useState({ name: "", email: "" });
-  const [formData, setFormData] = useState({ name: "", email: "" });
+  const [originalData, setOriginalData] = useState({
+    name: "",
+    email: "",
+    profileImageUrl: "",
+  });
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    profileImageUrl: "",
+  });
   const [isSaving, setIsSaving] = useState(false);
   const router = useRouter();
+  const [signedImageUrl, setSignedImageUrl] = useState("");
 
   useEffect(() => {
     async function fetchLatestUser() {
-      // Fetch user details from DB
-      const latestName = await getUserNameByEmail(user.email);
-      setOriginalData({ name: latestName || "", email: user.email });
-      setFormData({ name: latestName || "", email: user.email });
+      const latestUser = await getUserByEmail(user.email);
+      setOriginalData({
+        name: latestUser?.name || "",
+        email: user.email,
+        profileImageUrl: latestUser?.profileImageUrl || "",
+      });
+      setFormData({
+        name: latestUser?.name || "",
+        email: user.email,
+        profileImageUrl: latestUser?.profileImageUrl || "",
+      });
+      if (latestUser?.profileImageUrl) {
+        await fetchSignedImageUrl(latestUser.profileImageUrl);
+      } else {
+        setSignedImageUrl("");
+      }
     }
-    if (user && user.email) {
-      fetchLatestUser();
-    }
+    if (user && user.email) fetchLatestUser();
   }, [user?.email]);
 
   if (!user) return <div>Loading...</div>;
 
   const isFormUnchanged = Object.keys(originalData).every(
-    key => originalData[key] === formData[key]
+    (key) => originalData[key] === formData[key]
   );
 
   // Save handler: update Cognito "name" attribute & update in DB
@@ -57,12 +79,26 @@ function ProfilePage() {
       });
       await client.send(command);
       await updateUserNameByEmail(user.email, formData.name);
+      await updateProfileImageByEmail(user.email, formData.profileImageUrl);
       setOriginalData({ ...formData });
       alert("Name updated successfully!");
     } catch (error) {
       alert("Failed to update Name in Cognito.");
     }
     setIsSaving(false);
+  };
+
+  const handleImageUpload = async (url) => {
+    setFormData((prev) => ({ ...prev, profileImageUrl: url }));
+
+    try {
+      await updateProfileImageByEmail(user.email, url);
+      setOriginalData((prev) => ({ ...prev, profileImageUrl: url }));
+      alert("Profile picture updated!");
+    } catch (error) {
+      alert("Failed to update profile picture in database.");
+    }
+    await fetchSignedImageUrl(url);
   };
 
   // Cancel handler: revert UI state
@@ -90,12 +126,47 @@ function ProfilePage() {
         deleteReviewsByEmail(user.email);
         deleteUserByEmail(user.email);
         alert("Profile deleted");
-        router.push('/');
+        router.push("/");
       } catch (error) {
         alert("Failed to delete profile from Cognito.");
       }
       setIsSaving(false);
     }
+  };
+
+  async function fetchSignedImageUrl(s3Key) {
+    const res = await fetch(
+      `/api/get-profile-image-url?key=${encodeURIComponent(s3Key)}`
+    );
+    if (res.ok) {
+      const { url } = await res.json();
+      setSignedImageUrl(url);
+    }
+  }
+
+  const handleDeleteImage = async () => {
+    if (!formData.profileImageUrl) return;
+    setIsSaving(true);
+    try {
+      const res = await fetch("/api/delete-profile-image", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          s3Key: formData.profileImageUrl,
+        }),
+      });
+      if (res.ok) {
+        setFormData((prev) => ({ ...prev, profileImageUrl: "" }));
+        setSignedImageUrl("");
+        deleteProfileImageByEmail(formData.email);
+        alert("Profile image deleted.");
+      } else {
+        alert("Failed to delete image.");
+      }
+    } catch (error) {
+      alert("Failed to delete image.");
+    }
+    setIsSaving(false);
   };
 
   return (
@@ -107,6 +178,9 @@ function ProfilePage() {
       onDelete={handleDelete}
       isSaving={isSaving}
       isFormUnchanged={isFormUnchanged}
+      onImageUpload={handleImageUpload}
+      signedImageUrl={signedImageUrl}
+      handleDeleteImage={handleDeleteImage}
     />
   );
 }
