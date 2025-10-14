@@ -1,26 +1,512 @@
-"use client";
+// src/app/(private)/city/[name]/page.jsx
+import {
+  getCityDetailsBySlugOrName,
+  getCitySectionsBySlug,
+} from "../../../../repositories/cityDetails";
 
-import { useParams } from "next/navigation";
+const CDN_BASE = process.env.NEXT_PUBLIC_CITIES_CDN_BASE;
 
-/**
- * Reusable City Information page
- * - Used by: Recommendations list click
- * - Future: Also used by a "Find City" flow (choose from dropdown)
- */
-export default function CityInfoPage() {
-  const params = useParams();
-  const rawName = Array.isArray(params?.name) ? params.name[0] : params?.name;
-  const cityName = decodeURIComponent(rawName || "").replace(/_/g, " ");
+function slugifyCity(name) {
+  return (name || "")
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function getPlaceholders(cityName) {
+  const nice = cityName || "This City";
+  return {
+    city: cityName,
+    province: "ON",
+    imageKey: null,
+    gallery: [],
+    jobOpportunities: {
+      topIndustries: ["Tech", "Healthcare", "Education"],
+      growingSectors: ["AI", "Green Energy"],
+      demandByField: { tech: 8.5, healthcare: 7.5, finance: 7.0 },
+    },
+    costOfLiving: {
+      singleMonthly: 2200,
+      familyMonthly: 4800,
+      breakdown: { housing: 1300, food: 450, transit: 150 },
+      currency: "CAD",
+    },
+    weather: {
+      avgTemp: { winterC: -6, summerC: 22 },
+      snowfallCm: 110,
+      rainfallMm: 800,
+    },
+    rent: { oneBed: 2000, twoBed: 2600, basement: 1500, shared: 900 },
+    realEstate: { avgPrice: 850000, trend: "stable", buyVsRent: "depends" },
+    qualityOfLife: {
+      score: 7.8,
+      components: { greenSpace: 8.2, safety: 7.2, commute: 6.9, culture: 8.4 },
+    },
+    education: {
+      schoolBoards: ["Public Board", "Catholic Board"],
+      universities: [{ name: `${nice} University` }],
+      colleges: [{ name: `${nice} College` }],
+    },
+    healthcare: {
+      hospitals: [{ name: "General Hospital", distanceKm: 3.5 }],
+      clinicsCount: 75,
+      avgWaitDays: 6,
+      mentalHealthServices: true,
+    },
+    communityIntegration: {
+      culturalCenters: ["Community Centre"],
+      newcomerServices: ["Settlement Agency"],
+      languages: ["English", "French"],
+    },
+    immigrationSupport: {
+      agencies: ["Local Settlement Org"],
+      languageClassesFree: true,
+      supportGroups: ["Newcomer Group"],
+    },
+    safetyCrime: { crimeIndex: 40, policeStations: 10, programs: ["Watch"] },
+    transportation: {
+      transit: ["Bus", "Light Rail"],
+      bikeLanesKm: 120,
+      walkScore: 70,
+      airports: ["YYY"],
+    },
+    internetTech: {
+      highSpeedAvailability: "98%",
+      typicalDownMbps: 400,
+      techJobsPresence: "medium",
+    },
+    outdoorLifestyle: {
+      parks: 300,
+      majorParks: ["Central Park"],
+      gyms: 120,
+      restaurants: 900,
+      events: ["Food Fest"],
+    },
+    demographics: {
+      population: 500000,
+      ageDistribution: { "0-14": 0.16, "15-64": 0.68, "65+": 0.16 },
+      diversityIndex: 0.72,
+    },
+  };
+}
+
+function resolveHeroImage(city, province, imageKey) {
+  if (CDN_BASE && imageKey) return `${CDN_BASE}/${imageKey}`;
+  const display = city?.replace(/_/g, " ") || "Canada";
+  return `https://source.unsplash.com/featured/?${encodeURIComponent(
+    `${display} ${province || "Canada"}`
+  )}`;
+}
+
+// co-located UI parts
+import CityHeader from "./_components/CityHeader";
+import InfoSection from "./_components/InfoSection";
+import KeyValueList from "./_components/KeyValueList";
+import PillList from "./_components/PillList";
+
+export default async function CityInfoPage({ params }) {
+  // ⬇️ IMPORTANT: await params before using it
+  const awaited = await params;
+  const rawParam = Array.isArray(awaited?.name)
+    ? awaited.name[0]
+    : awaited?.name;
+  const cityName = decodeURIComponent(rawParam || "").replace(/_/g, " ");
+
+  const bySlug = await getCitySectionsBySlug(slugifyCity(cityName));
+  const details =
+    bySlug ||
+    (await getCityDetailsBySlugOrName(cityName)) ||
+    getPlaceholders(cityName);
+
+  const heroSrc = resolveHeroImage(
+    details.city || cityName,
+    details.province,
+    details.imageKey
+  );
+
+  const jobs = details.jobOpportunities || {};
+  const col = details.costOfLiving || {};
+  const weather = details.weather || {};
+  const rent = details.rent || {};
+  const realEstate = details.realEstate || {};
+  const qol = details.qualityOfLife || {};
+  const edu = details.education || {};
+  const health = details.healthcare || {};
+  const community = details.communityIntegration || {};
+  const immigration = details.immigrationSupport || {};
+  const safety = details.safetyCrime || {};
+  const transit = details.transportation || {};
+  const net = details.internetTech || {};
+  const lifestyle = details.outdoorLifestyle || {};
+  const demo = details.demographics || {};
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6">
-      <h1 className="text-3xl font-bold">{cityName}</h1>
-      <p className="text-gray-500">
-        City information UI placeholder. We’ll populate all sections (jobs, COL,
-        weather, rent, real estate, quality of life, education, healthcare,
-        community, immigration support, safety, transit, internet/tech, outdoor
-        & lifestyle, demographics) once the City details schema/API is ready.
+    <div className="max-w-6xl mx-auto space-y-8">
+      <CityHeader
+        title={details.city || cityName}
+        subtitle={details.province ? `Province: ${details.province}` : ""}
+        imageUrl={heroSrc}
+      />
+
+      {/* Sections (unchanged) */}
+      <InfoSection title="Job Opportunities" subtitle="Industries & demand">
+        <div className="grid gap-4 md:grid-cols-2">
+          <div>
+            <h4 className="font-semibold mb-2">Top Industries</h4>
+            <PillList items={jobs.topIndustries || []} />
+          </div>
+          <div>
+            <h4 className="font-semibold mb-2">Growing Sectors</h4>
+            <PillList items={jobs.growingSectors || []} />
+          </div>
+        </div>
+        <div className="mt-4">
+          <h4 className="font-semibold mb-2">Demand by Field (0–10)</h4>
+          <KeyValueList
+            items={Object.entries(jobs.demandByField || {}).map(([k, v]) => ({
+              label: k,
+              value: String(v),
+            }))}
+          />
+        </div>
+      </InfoSection>
+
+      <InfoSection title="Cost of Living" subtitle="Monthly estimates">
+        <KeyValueList
+          items={[
+            col.singleMonthly != null && {
+              label: "Single (monthly)",
+              value: formatCurrency(col.singleMonthly),
+            },
+            col.familyMonthly != null && {
+              label: "Family (monthly)",
+              value: formatCurrency(col.familyMonthly),
+            },
+          ].filter(Boolean)}
+        />
+        {col.breakdown && (
+          <div className="mt-4">
+            <h4 className="font-semibold mb-2">Breakdown</h4>
+            <KeyValueList
+              items={Object.entries(col.breakdown).map(([k, v]) => ({
+                label: k,
+                value: formatCurrency(Number(v)),
+              }))}
+            />
+          </div>
+        )}
+      </InfoSection>
+
+      <InfoSection title="Weather">
+        <KeyValueList
+          items={[
+            weather.avgTemp?.winterC != null && {
+              label: "Avg Winter (°C)",
+              value: String(weather.avgTemp.winterC),
+            },
+            weather.avgTemp?.summerC != null && {
+              label: "Avg Summer (°C)",
+              value: String(weather.avgTemp.summerC),
+            },
+            weather.snowfallCm != null && {
+              label: "Snowfall (cm/yr)",
+              value: String(weather.snowfallCm),
+            },
+            weather.rainfallMm != null && {
+              label: "Rainfall (mm/yr)",
+              value: String(weather.rainfallMm),
+            },
+          ].filter(Boolean)}
+        />
+      </InfoSection>
+
+      <InfoSection title="Average Rent Prices">
+        <KeyValueList
+          items={[
+            rent.oneBed != null && {
+              label: "1-bed",
+              value: formatCurrency(rent.oneBed),
+            },
+            rent.twoBed != null && {
+              label: "2-bed",
+              value: formatCurrency(rent.twoBed),
+            },
+            rent.basement != null && {
+              label: "Basement",
+              value: formatCurrency(rent.basement),
+            },
+            rent.shared != null && {
+              label: "Shared",
+              value: formatCurrency(rent.shared),
+            },
+          ].filter(Boolean)}
+        />
+      </InfoSection>
+
+      <InfoSection title="Real Estate Outlook">
+        <KeyValueList
+          items={[
+            realEstate.avgPrice != null && {
+              label: "Avg House Price",
+              value: formatCurrency(realEstate.avgPrice),
+            },
+            realEstate.trend && {
+              label: "Market Trend",
+              value: String(realEstate.trend),
+            },
+            realEstate.buyVsRent && {
+              label: "Buying vs Renting",
+              value: String(realEstate.buyVsRent),
+            },
+          ].filter(Boolean)}
+        />
+      </InfoSection>
+
+      <InfoSection title="Quality of Life">
+        <KeyValueList
+          items={[
+            qol.score != null && {
+              label: "Composite Score",
+              value: String(qol.score),
+            },
+            ...(Object.entries(qol.components || {}).map(([k, v]) => ({
+              label: k,
+              value: String(v),
+            })) || []),
+          ]}
+        />
+      </InfoSection>
+
+      <InfoSection title="Education Facilities">
+        {Array.isArray(edu.schoolBoards) && edu.schoolBoards.length > 0 && (
+          <>
+            <h4 className="font-semibold mb-2">School Boards</h4>
+            <PillList items={edu.schoolBoards} />
+          </>
+        )}
+        {(Array.isArray(edu.universities) && edu.universities.length > 0) ||
+        (Array.isArray(edu.colleges) && edu.colleges.length > 0) ? (
+          <div className="grid gap-4 md:grid-cols-2 mt-4">
+            <div>
+              <h4 className="font-semibold mb-2">Universities</h4>
+              <PillList items={edu.universities?.map((u) => u.name) || []} />
+            </div>
+            <div>
+              <h4 className="font-semibold mb-2">Colleges</h4>
+              <PillList items={edu.colleges?.map((c) => c.name) || []} />
+            </div>
+          </div>
+        ) : null}
+      </InfoSection>
+
+      <InfoSection title="Healthcare Access">
+        <KeyValueList
+          items={[
+            health.clinicsCount != null && {
+              label: "Clinics",
+              value: String(health.clinicsCount),
+            },
+            health.avgWaitDays != null && {
+              label: "Avg Wait (days)",
+              value: String(health.avgWaitDays),
+            },
+            health.mentalHealthServices != null && {
+              label: "Mental Health Services",
+              value: health.mentalHealthServices ? "Yes" : "No",
+            },
+          ].filter(Boolean)}
+        />
+        {Array.isArray(health.hospitals) && health.hospitals.length > 0 && (
+          <div className="mt-4">
+            <h4 className="font-semibold mb-2">Hospitals</h4>
+            <KeyValueList
+              items={health.hospitals.map((h) => ({
+                label: h.name,
+                value:
+                  h.distanceKm != null ? `${h.distanceKm} km` : "distance n/a",
+              }))}
+            />
+          </div>
+        )}
+      </InfoSection>
+
+      <InfoSection title="Community Integration">
+        <div className="grid gap-4 md:grid-cols-3">
+          <div>
+            <h4 className="font-semibold mb-2">Cultural Centers</h4>
+            <PillList items={community.culturalCenters || []} />
+          </div>
+          <div>
+            <h4 className="font-semibold mb-2">Newcomer Services</h4>
+            <PillList items={community.newcomerServices || []} />
+          </div>
+          <div>
+            <h4 className="font-semibold mb-2">Languages</h4>
+            <PillList items={community.languages || []} />
+          </div>
+        </div>
+      </InfoSection>
+
+      <InfoSection title="Immigration Support">
+        <KeyValueList
+          items={[
+            immigration.languageClassesFree != null && {
+              label: "Free Language Classes",
+              value: immigration.languageClassesFree ? "Yes" : "No",
+            },
+          ].filter(Boolean)}
+        />
+        <div className="mt-4">
+          <h4 className="font-semibold mb-2">Agencies & Groups</h4>
+          <PillList
+            items={[
+              ...(immigration.agencies || []),
+              ...(immigration.supportGroups || []),
+            ]}
+          />
+        </div>
+      </InfoSection>
+
+      <InfoSection title="Safety / Crime Rates">
+        <KeyValueList
+          items={[
+            safety.crimeIndex != null && {
+              label: "Crime Index",
+              value: String(safety.crimeIndex),
+            },
+            safety.policeStations != null && {
+              label: "Police Stations",
+              value: String(safety.policeStations),
+            },
+          ].filter(Boolean)}
+        />
+        {Array.isArray(safety.programs) && safety.programs.length > 0 && (
+          <div className="mt-4">
+            <h4 className="font-semibold mb-2">Programs</h4>
+            <PillList items={safety.programs} />
+          </div>
+        )}
+      </InfoSection>
+
+      <InfoSection title="Transportation">
+        <KeyValueList
+          items={[
+            transit.walkScore != null && {
+              label: "Walk Score",
+              value: String(transit.walkScore),
+            },
+            transit.bikeLanesKm != null && {
+              label: "Bike Lanes (km)",
+              value: String(transit.bikeLanesKm),
+            },
+            Array.isArray(transit.airports) &&
+              transit.airports.length > 0 && {
+                label: "Airports",
+                value: transit.airports.join(", "),
+              },
+          ].filter(Boolean)}
+        />
+        {Array.isArray(transit.transit) && transit.transit.length > 0 && (
+          <div className="mt-4">
+            <h4 className="font-semibold mb-2">Transit Options</h4>
+            <PillList items={transit.transit} />
+          </div>
+        )}
+      </InfoSection>
+
+      <InfoSection title="Internet & Tech Access">
+        <KeyValueList
+          items={[
+            net.highSpeedAvailability && {
+              label: "High-speed Availability",
+              value: String(net.highSpeedAvailability),
+            },
+            net.typicalDownMbps != null && {
+              label: "Typical Down (Mbps)",
+              value: String(net.typicalDownMbps),
+            },
+            net.techJobsPresence && {
+              label: "Tech Jobs Presence",
+              value: String(net.techJobsPresence),
+            },
+          ].filter(Boolean)}
+        />
+      </InfoSection>
+
+      <InfoSection title="Outdoor & Lifestyle">
+        <KeyValueList
+          items={[
+            lifestyle.parks != null && {
+              label: "Parks",
+              value: String(lifestyle.parks),
+            },
+            Array.isArray(lifestyle.majorParks) &&
+              lifestyle.majorParks.length > 0 && {
+                label: "Major Parks",
+                value: lifestyle.majorParks.join(", "),
+              },
+            lifestyle.gyms != null && {
+              label: "Gyms",
+              value: String(lifestyle.gyms),
+            },
+            lifestyle.restaurants != null && {
+              label: "Restaurants",
+              value: String(lifestyle.restaurants),
+            },
+          ].filter(Boolean)}
+        />
+        {Array.isArray(lifestyle.events) && lifestyle.events.length > 0 && (
+          <div className="mt-4">
+            <h4 className="font-semibold mb-2">Events</h4>
+            <PillList items={lifestyle.events} />
+          </div>
+        )}
+      </InfoSection>
+
+      <InfoSection title="Demographics Snapshot">
+        <KeyValueList
+          items={[
+            demo.population != null && {
+              label: "Population",
+              value: demo.population.toLocaleString(),
+            },
+            demo.diversityIndex != null && {
+              label: "Diversity Index",
+              value: String(demo.diversityIndex),
+            },
+          ].filter(Boolean)}
+        />
+        {demo.ageDistribution && (
+          <div className="mt-4">
+            <h4 className="font-semibold mb-2">Age Distribution</h4>
+            <KeyValueList
+              items={Object.entries(demo.ageDistribution).map(([k, v]) => ({
+                label: k,
+                value: `${Math.round(Number(v) * 100)}%`,
+              }))}
+            />
+          </div>
+        )}
+      </InfoSection>
+
+      <p className="text-xs text-gray-500">
+        Last updated:{" "}
+        {details.updatedAt
+          ? new Date(details.updatedAt).toLocaleDateString()
+          : "—"}
       </p>
     </div>
   );
+}
+
+function formatCurrency(n) {
+  if (typeof n !== "number" || Number.isNaN(n)) return "—";
+  return n.toLocaleString("en-CA", {
+    style: "currency",
+    currency: "CAD",
+    maximumFractionDigits: 0,
+  });
 }
