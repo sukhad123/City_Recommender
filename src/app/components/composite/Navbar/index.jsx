@@ -93,7 +93,7 @@ export default function NavbarComponent({
                 }}
                 variant="flat"
               >
-                Sign-In/Sign-Up
+               Get Started
               </Button>
             </NavbarItem>
           </NavbarContent>

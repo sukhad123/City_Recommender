@@ -10,7 +10,7 @@ export const unauthenticatedMenuItems = [
 }
 export const authenticatedMenuItems = [
   { label: "Reviews", link: "/review" },
-  { label: "Profile", link: "/dashboard" },
+  { label: "Profile", link: "/profile-update" },
   { label: "Recommendations", link: "/recommendations" },
   //  { label: "Log Out", link: "/profile" },
 ];

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@heroui/react";
+import getRecommendation from "../../../services/core/recommendation/getRecommendation.js";
 
 import JobFieldSelect from "./_components/JobFieldSelect";
 import CostOfLiving from "./_components/CostOfLiving";
@@ -151,8 +152,10 @@ export default function UserPreferencesPage() {
       await upsertUserPreferences(userEmail, dbPayload);
       setHasPrefs(true);
 
-      const recs = await getCityRecommendations(flaskPayload);
-      const ranked = recs.ranked_cities || [];
+      const recs = await getRecommendation(flaskPayload);
+      console.log("Recommendation",recs);
+      alert("Preferences saved. See recommended cities based on your preferences.",recs);
+      const ranked = recs || [];
 
       await saveCityRecommendations(userEmail, ranked);
       const saved = await getCityRecommendationsForUser(userEmail);

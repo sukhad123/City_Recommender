@@ -31,7 +31,7 @@
     "**/*.tsx",
     "src/app/(private)/layout.jsx",
     "src/db/prisma.js"
-  ],
+, "src/app/(private)/dashboard/page.jsx"  ],
   "exclude": [
     "node_modules"
   ]

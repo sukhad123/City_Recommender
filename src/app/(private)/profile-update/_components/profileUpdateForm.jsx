@@ -8,6 +8,7 @@ import {
 } from "@heroui/react";
 import { CircleUser } from "lucide-react";
 import { useRef } from "react";
+import { redirect } from "next/navigation";
 
 export default function ProfileForm({
   formData,
@@ -86,7 +87,10 @@ export default function ProfileForm({
               <Button color="primary" onPress={() => fileInput.current.click()}>
                 Upload/Replace
               </Button>
-              <Button color="danger" onPress={handleDeleteImage} isDisabled={!formData.profileImageUrl || isSaving}
+              <Button
+                color="danger"
+                onPress={handleDeleteImage}
+                isDisabled={!formData.profileImageUrl || isSaving}
               >
                 Delete Image
               </Button>
@@ -131,6 +135,15 @@ export default function ProfileForm({
               Cancel
             </Button>
           </div>
+          <Button
+            color="primary"
+            onPress={() => {
+              redirect("/dashboard");
+            }}
+            isDisabled={isSaving}
+          >
+            Go Back
+          </Button>
           <Button color="danger" onPress={onDelete} isDisabled={isSaving}>
             Delete Profile
           </Button>

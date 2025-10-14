@@ -4,41 +4,72 @@ import {
   CardHeader,
   CardBody,
   CardFooter,
-  Button
+  Button,
+  Divider,
+  Avatar,
+  Spacer
 } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { City, User, Compass } from "lucide-react";
 
-export default function Hero({email}) {
+export default function Hero({ email }) {
   const router = useRouter();
+
   return (
-    <div className="flex items-center justify-center min-h-screen  p-6">
-      <Card className="max-w-md w-full shadow-lg">
-        <CardHeader className="flex flex-col items-center text-center">
-          <h1 className="text-2xl font-bold">Welcome 👋</h1>
-          <p className=" mt-1">{email}</p>
+    <div className="flex items-center justify-center min-h-screen   from-blue-50   to-blue-100 p-1">
+      <Card shadow="lg" radius="lg" className="w-full max-w-md  backdrop-blur-md">
+        <CardHeader className="flex flex-col items-center text-center space-y-3">
+          
+          <div>
+            <h1 className="text-3xl font-bold text-primary">Welcome 👋</h1>
+            <p className="text-sm text-default-500 mt-1">{email}</p>
+          </div>
         </CardHeader>
 
-        <CardBody className="space-y-4 text-center">
-          <p >
-            You’re signed in to <strong>City Recommender</strong>.  
-            Start exploring Canadian cities tailored to your lifestyle, career, and goals.
+        <Divider />
+
+        <CardBody className="text-center space-y-4">
+          <p className="text-default-600 leading-relaxed">
+            You’re signed in to <strong>City Recommender</strong>.
+            Discover Canadian cities that fit your lifestyle, goals, and opportunities.
+          </p>
+          <Spacer y={2} />
+          <p className="text-small text-default-500 italic">
+            Start your journey toward finding your perfect city match 🏙️
           </p>
         </CardBody>
 
-        <CardFooter className="flex flex-row space-x-3 justify-center">
-          <Button color="primary" onPress={() => alert("City search coming soon!")}>
-            Find My City
+        <Divider />
+
+        <CardFooter className="flex flex-col sm:flex-row gap-3 justify-center">
+          <Button
+            color="primary"
+            variant="solid"
+            fullWidth
+            startContent={<Compass size={18} />}
+            onPress={() => alert("City search coming soon!")}
+          >
+           
           </Button>
-          <Button color="secondary" onPress={() => router.push("/profile-update")}>
+
+          <Button
+            color="secondary"
+            variant="flat"
+            fullWidth
+            startContent={<User size={18} />}
+            onPress={() => router.push("/profile-update")}
+          >
             Update Profile
           </Button>
-            <Link href="/userPreferences">
-            <Button color="success">User Preferences</Button>
+
+          <Link href="/userPreferences" className="w-full sm:w-auto">
+            <Button color="success" variant="flat" fullWidth  startContent={<Compass size={18} />}>
+             Find My City
+            </Button>
           </Link>
         </CardFooter>
       </Card>
     </div>
   );
-
 }
