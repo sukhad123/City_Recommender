@@ -1,8 +1,12 @@
 // src/app/(private)/city/[name]/page.jsx
-import {
-  getCityDetailsByName,
-  getCitySectionsByName,
-} from "../../../../repositories/cityDetails";
+"use client";
+
+import { useEffect, useState } from "react";
+import { useParams, useSearchParams } from "next/navigation";
+
+
+import LoadingSpinner from "../../../components/ui/spinner";
+import getCityInformation from "../../../../services/core/cityInformation/retrieve_cityInformation";
 
 // env for your CDN/S3 base (optional)
 const CDN_BASE = process.env.NEXT_PUBLIC_CITIES_CDN_BASE;
@@ -100,23 +104,98 @@ import InfoSection from "./_components/InfoSection";
 import KeyValueList from "./_components/KeyValueList";
 import PillList from "./_components/PillList";
 
-export default async function CityInfoPage({ params, searchParams }) {
-  // Next “dynamic params” are thenable, so await first
-  const awaited = await params;
-  const rawParam = Array.isArray(awaited?.name)
-    ? awaited.name[0]
-    : awaited?.name;
+export default function CityInfoPage() {
+  const params = useParams();
+  const searchParams = useSearchParams();
+  const [details, setDetails] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchCityData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Extract city name from params
+        const rawParam = Array.isArray(params?.name) ? params.name[0] : params?.name;
+        const cityName = decodeURIComponent(rawParam || "").replace(/_/g, " ");
+        const province = searchParams?.get('province') || undefined;
+
+        console.log("City name:", cityName);
+
+        // Try to get city information from the new service first
+        console.log("Fetching city information for:", cityName);
+        const cityInfo = await getCityInformation(cityName);
+        console.log("City info received:", cityInfo);
+        
+        // If we got valid city info, use it
+        if (cityInfo && typeof cityInfo === 'object' && cityInfo.city) {
+          setDetails(cityInfo);
+        } else {
+          // Fallback to DB or placeholders
+          const fromDb =
+            (await getCitySectionsByName(cityName, province)) ||
+            (await getCityDetailsByName(cityName, province));
+          setDetails(fromDb || getPlaceholders(cityName));
+        }
+      } catch (error) {
+        console.error("Error fetching city information:", error);
+        setError(error);
+        
+        // Fallback to DB or placeholders
+        try {
+          const rawParam = Array.isArray(params?.name) ? params.name[0] : params?.name;
+          const cityName = decodeURIComponent(rawParam || "").replace(/_/g, " ");
+          const province = searchParams?.get('province') || undefined;
+          
+          const fromDb =
+            (await getCitySectionsByName(cityName, province)) ||
+            (await getCityDetailsByName(cityName, province));
+          setDetails(fromDb || getPlaceholders(cityName));
+        } catch (fallbackError) {
+          console.error("Fallback also failed:", fallbackError);
+          setDetails(getPlaceholders(cityName));
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCityData();
+  }, [params, searchParams]);
+
+  // Show loading spinner while fetching data
+  if (loading) {
+    return <LoadingSpinner />;
+  }
+
+  // Show error state if needed
+  if (error && !details) {
+    return (
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-danger mb-4">Error Loading City Data</h1>
+          <p className="text-default-500">{error.message}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!details) {
+    return (
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-foreground mb-4">City Not Found</h1>
+          <p className="text-default-500">Unable to load city information.</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Extract city name for image resolution
+  const rawParam = Array.isArray(params?.name) ? params.name[0] : params?.name;
   const cityName = decodeURIComponent(rawParam || "").replace(/_/g, " ");
-
-  // Optional disambiguation via query: /city/Toronto?province=ON
-  const province = searchParams?.province ?? undefined;
-
-  // Try DB by city + optional province (no slug)
-  const fromDb =
-    (await getCitySectionsByName(cityName, province)) ||
-    (await getCityDetailsByName(cityName, province));
-
-  const details = fromDb || getPlaceholders(cityName);
 
   const heroSrc = resolveHeroImage(
     details.city || cityName,
@@ -141,7 +220,7 @@ export default async function CityInfoPage({ params, searchParams }) {
   const demo = details.demographics || {};
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8">
+    <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
       <CityHeader
         title={details.city || cityName}
         subtitle={details.province ? `Province: ${details.province}` : ""}
@@ -150,18 +229,18 @@ export default async function CityInfoPage({ params, searchParams }) {
 
       {/* Job Opportunities */}
       <InfoSection title="Job Opportunities" subtitle="Industries & demand">
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-6 md:grid-cols-2">
           <div>
-            <h4 className="font-semibold mb-2">Top Industries</h4>
+            <h4 className="font-semibold mb-3 text-foreground">Top Industries</h4>
             <PillList items={jobs.topIndustries || []} />
           </div>
           <div>
-            <h4 className="font-semibold mb-2">Growing Sectors</h4>
+            <h4 className="font-semibold mb-3 text-foreground">Growing Sectors</h4>
             <PillList items={jobs.growingSectors || []} />
           </div>
         </div>
-        <div className="mt-4">
-          <h4 className="font-semibold mb-2">Demand by Field (0–10)</h4>
+        <div className="mt-6">
+          <h4 className="font-semibold mb-3 text-foreground">Demand by Field (0–10)</h4>
           <KeyValueList
             items={Object.entries(jobs.demandByField || {}).map(([k, v]) => ({
               label: k,
@@ -186,8 +265,8 @@ export default async function CityInfoPage({ params, searchParams }) {
           ].filter(Boolean)}
         />
         {col.breakdown && (
-          <div className="mt-4">
-            <h4 className="font-semibold mb-2">Breakdown</h4>
+          <div className="mt-6">
+            <h4 className="font-semibold mb-3 text-foreground">Breakdown</h4>
             <KeyValueList
               items={Object.entries(col.breakdown).map(([k, v]) => ({
                 label: k,
@@ -503,12 +582,14 @@ export default async function CityInfoPage({ params, searchParams }) {
         )}
       </InfoSection>
 
-      <p className="text-xs text-gray-500">
-        Last updated:{" "}
-        {details.updatedAt
-          ? new Date(details.updatedAt).toLocaleDateString()
-          : "—"}
-      </p>
+      <div className="text-center py-4">
+        <p className="text-xs text-default-400">
+          Last updated:{" "}
+          {details.updatedAt
+            ? new Date(details.updatedAt).toLocaleDateString()
+            : "—"}
+        </p>
+      </div>
     </div>
   );
 }
