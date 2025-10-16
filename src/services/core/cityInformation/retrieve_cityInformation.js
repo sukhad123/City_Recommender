@@ -6,8 +6,8 @@ import callOpenAIChat from "../../../libs/opeai/helper/callOpenAIChat.js";
 //Idea: serper scrape wikipedia
 //Call lllm to extract the information
 //System Prompt
-const system_prompt=   `You are a helpful assistant that extracts detailed information
-crawl Wikipedia for the provided city from a Wikipedia page about a city and returns it as JSON in the following format:
+const system_prompt=   `You are a helpful assistant that extracts detailed information FOR THE CITY
+and returns it as JSON in the following format:
 Sample JSON:
 {
   "city": "Toronto",
@@ -87,12 +87,18 @@ export default async function getCityInformation(cityName)
   try{
     const response = await callOpenAIChat(cityName,system_prompt)
     let parsed;
-    try {
-      parsed = JSON.parse(response);
-    } catch (err) {
-      console.warn("Failed to parse JSON, returning raw response");
-      parsed = response;
-    } 
+    let data;
+
+try {
+  data = typeof response === "string" ? JSON.parse(response) : response;
+  return data;
+} catch (err) {
+  console.warn("Failed to parse JSON, returning raw response");
+  data = response; 
+}
+
+console.log("Parsed data:", data);
+
     return parsed;
     
   }

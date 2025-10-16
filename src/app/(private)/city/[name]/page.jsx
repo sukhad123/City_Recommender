@@ -47,22 +47,23 @@ export default function CityInfoPage() {
         // Try to get city information from the new service first
         console.log("Fetching city information for:", cityName);
         const cityInfo = await getCityInformation(cityName);
+        setDetails(cityInfo);
+        setLoading(false);
+
         console.log("City info received:", cityInfo);
         
     
       } catch (error) {
         console.error("Error fetching city information:", error);
-        setError(error);
+        
         
         // Fallback to DB or placeholders
       
-      } finally {
-        setLoading(false);
-      }
+      } 
     };
 
     fetchCityData();
-  }, [params, searchParams]);
+  }, []);
 
   // Show loading spinner while fetching data
   if (loading) {
@@ -96,11 +97,7 @@ export default function CityInfoPage() {
   const rawParam = Array.isArray(params?.name) ? params.name[0] : params?.name;
   const cityName = decodeURIComponent(rawParam || "").replace(/_/g, " ");
 
-  const heroSrc = resolveHeroImage(
-    details.city || cityName,
-    details.province,
-    details.imageKey
-  );
+  
 
   const jobs = details.jobOpportunities || {};
   const col = details.costOfLiving || {};
@@ -120,11 +117,7 @@ export default function CityInfoPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
-      <CityHeader
-        title={details.city || cityName}
-        subtitle={details.province ? `Province: ${details.province}` : ""}
-        imageUrl={heroSrc}
-      />
+      
 
       {/* Job Opportunities */}
       <InfoSection title="Job Opportunities" subtitle="Industries & demand">
