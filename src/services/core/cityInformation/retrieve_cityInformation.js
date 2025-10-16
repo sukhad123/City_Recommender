@@ -85,6 +85,7 @@ Sample JSON:
 export default async function getCityInformation(cityName)
 {
   try{
+    
     const response = await callOpenAIChat(cityName,system_prompt)
     let parsed;
     let data;

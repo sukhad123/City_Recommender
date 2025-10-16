@@ -63,7 +63,7 @@ export default function CityInfoPage() {
     };
 
     fetchCityData();
-  }, []);
+  }, [params, searchParams]);
 
   // Show loading spinner while fetching data
   if (loading) {
@@ -93,11 +93,7 @@ export default function CityInfoPage() {
     );
   }
 
-  // Extract city name for image resolution
-  const rawParam = Array.isArray(params?.name) ? params.name[0] : params?.name;
-  const cityName = decodeURIComponent(rawParam || "").replace(/_/g, " ");
-
-  
+ 
 
   const jobs = details.jobOpportunities || {};
   const col = details.costOfLiving || {};
