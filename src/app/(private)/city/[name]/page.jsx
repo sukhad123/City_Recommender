@@ -9,94 +9,14 @@ import LoadingSpinner from "../../../components/ui/spinner";
 import getCityInformation from "../../../../services/core/cityInformation/retrieve_cityInformation";
 
 // env for your CDN/S3 base (optional)
-const CDN_BASE = process.env.NEXT_PUBLIC_CITIES_CDN_BASE;
-
-/** Placeholder data when DB has no row yet. */
-function getPlaceholders(cityName) {
-  const nice = cityName || "This City";
-  return {
-    city: cityName,
-    province: "ON",
-    imageKey: null,
-    gallery: [],
-    jobOpportunities: {
-      topIndustries: ["Tech", "Healthcare", "Education"],
-      growingSectors: ["AI", "Green Energy"],
-      demandByField: { tech: 8.5, healthcare: 7.5, finance: 7.0 },
-    },
-    costOfLiving: {
-      singleMonthly: 2200,
-      familyMonthly: 4800,
-      breakdown: { housing: 1300, food: 450, transit: 150 },
-      currency: "CAD",
-    },
-    weather: {
-      avgTemp: { winterC: -6, summerC: 22 },
-      snowfallCm: 110,
-      rainfallMm: 800,
-    },
-    rent: { oneBed: 2000, twoBed: 2600, basement: 1500, shared: 900 },
-    realEstate: { avgPrice: 850000, trend: "stable", buyVsRent: "depends" },
-    qualityOfLife: {
-      score: 7.8,
-      components: { greenSpace: 8.2, safety: 7.2, commute: 6.9, culture: 8.4 },
-    },
-    education: {
-      schoolBoards: ["Public Board", "Catholic Board"],
-      universities: [{ name: `${nice} University` }],
-      colleges: [{ name: `${nice} College` }],
-    },
-    healthcare: {
-      hospitals: [{ name: "General Hospital", distanceKm: 3.5 }],
-      clinicsCount: 75,
-      avgWaitDays: 6,
-      mentalHealthServices: true,
-    },
-    communityIntegration: {
-      culturalCenters: ["Community Centre"],
-      newcomerServices: ["Settlement Agency"],
-      languages: ["English", "French"],
-    },
-    immigrationSupport: {
-      agencies: ["Local Settlement Org"],
-      languageClassesFree: true,
-      supportGroups: ["Newcomer Group"],
-    },
-    safetyCrime: { crimeIndex: 40, policeStations: 10, programs: ["Watch"] },
-    transportation: {
-      transit: ["Bus", "Light Rail"],
-      bikeLanesKm: 120,
-      walkScore: 70,
-      airports: ["YYY"],
-    },
-    internetTech: {
-      highSpeedAvailability: "98%",
-      typicalDownMbps: 400,
-      techJobsPresence: "medium",
-    },
-    outdoorLifestyle: {
-      parks: 300,
-      majorParks: ["Central Park"],
-      gyms: 120,
-      restaurants: 900,
-      events: ["Food Fest"],
-    },
-    demographics: {
-      population: 500000,
-      ageDistribution: { "0-14": 0.16, "15-64": 0.68, "65+": 0.16 },
-      diversityIndex: 0.72,
-    },
-  };
-}
-
-/** Build an image URL using S3/CDN if imageKey exists, else Unsplash fallback */
+/** Build an image URL using S3/CDN if imageKey exists, else Unsplash fallback 
 function resolveHeroImage(city, province, imageKey) {
   if (CDN_BASE && imageKey) return `${CDN_BASE}/${imageKey}`;
   const display = city?.replace(/_/g, " ") || "Canada";
   return `https://source.unsplash.com/featured/?${encodeURIComponent(
     `${display} ${province || "Canada"}`
   )}`;
-}
+}*/
 
 // UI components
 import CityHeader from "./_components/CityHeader";
@@ -129,34 +49,13 @@ export default function CityInfoPage() {
         const cityInfo = await getCityInformation(cityName);
         console.log("City info received:", cityInfo);
         
-        // If we got valid city info, use it
-        if (cityInfo && typeof cityInfo === 'object' && cityInfo.city) {
-          setDetails(cityInfo);
-        } else {
-          // Fallback to DB or placeholders
-          const fromDb =
-            (await getCitySectionsByName(cityName, province)) ||
-            (await getCityDetailsByName(cityName, province));
-          setDetails(fromDb || getPlaceholders(cityName));
-        }
+    
       } catch (error) {
         console.error("Error fetching city information:", error);
         setError(error);
         
         // Fallback to DB or placeholders
-        try {
-          const rawParam = Array.isArray(params?.name) ? params.name[0] : params?.name;
-          const cityName = decodeURIComponent(rawParam || "").replace(/_/g, " ");
-          const province = searchParams?.get('province') || undefined;
-          
-          const fromDb =
-            (await getCitySectionsByName(cityName, province)) ||
-            (await getCityDetailsByName(cityName, province));
-          setDetails(fromDb || getPlaceholders(cityName));
-        } catch (fallbackError) {
-          console.error("Fallback also failed:", fallbackError);
-          setDetails(getPlaceholders(cityName));
-        }
+      
       } finally {
         setLoading(false);
       }
