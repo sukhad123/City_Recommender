@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@heroui/react";
 import getRecommendation from "../../../services/core/recommendation/getRecommendation.js";

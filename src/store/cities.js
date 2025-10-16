@@ -1,3 +1,4 @@
+"use client"
 import { atom } from "jotai";
 
 {/**Cities list atom */}
