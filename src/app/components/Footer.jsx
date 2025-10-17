@@ -1,9 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";   
 import ContactFormModal from "./ContactFormModal";
-import SocialButtons from "./SocialButtons";
+import SocialButtons from "./SocialButtons"
 
 export default function Footer() {
   const [contactOpen, setContactOpen] = useState(false);
@@ -16,12 +15,10 @@ export default function Footer() {
         </span>
 
         <div className="flex space-x-6 mt-2 sm:mt-0 items-center">
-          <Link
-            href="/about"
-            className="hover:underline cursor-pointer text-gray-500"
-          >
+     
+          <span className="hover:underline cursor-pointer text-gray-500">
             About
-          </Link>
+          </span>
 
           <button
             onClick={() => setContactOpen(true)}
@@ -30,7 +27,8 @@ export default function Footer() {
             Contact
           </button>
 
-          <SocialButtons />
+   
+         <SocialButtons/>
         </div>
       </div>
       <ContactFormModal
