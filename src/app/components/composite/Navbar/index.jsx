@@ -40,7 +40,12 @@ export default function NavbarComponent({
 
         <NavbarContent className="hidden sm:flex gap-4" justify="center">
           <NavbarBrand>
-            <p className="font-bold text-inherit">City Recommender</p>
+             <Link
+              href={isAuthenticated ? "/dashboard" : "/"}
+              style={{ color: "white", cursor: "pointer", fontWeight: "bold" }}
+            >
+              City Recommender
+            </Link>
           </NavbarBrand>
         </NavbarContent>
         {isAuthenticated && (
