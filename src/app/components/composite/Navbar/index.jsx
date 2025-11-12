@@ -40,32 +40,49 @@ export default function NavbarComponent({
 
         <NavbarContent className="hidden sm:flex gap-4" justify="center">
           <NavbarBrand>
-            <p className="font-bold text-inherit">City Recommender</p>
+             <Link
+              href={isAuthenticated ? "/dashboard" : "/"}
+              style={{ color: "white", cursor: "pointer", fontWeight: "bold" }}
+            >
+              City Recommender
+            </Link>
           </NavbarBrand>
         </NavbarContent>
         {isAuthenticated && (
           <NavbarContent className="hidden md:flex" justify="end">
             {/**Desktop Display  */}
-
             {menuItems.map((item, index) => (
               <NavbarItem key={index} isActive={item.active}>
                 <Link href={item.link}>{item.label}</Link>
               </NavbarItem>
             ))}
+
             <div className="flex items-center ml-4 space-x-2">
               {userInfo?.image ? (
-                <img
-                  src={userInfo.image}
-                  className="w-9 h-9 rounded-full object-cover border border-gray-300"
-                  alt={userInfo.name || "Profile"}
-                />
+                <Link href="/profile-update" className="inline-block">
+                  <img
+                    src={userInfo.image}
+                    className="w-9 h-9 rounded-full object-cover border border-gray-300"
+                    alt={userInfo.name || "Profile"}
+                  />
+                </Link>
               ) : (
-                <div className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold">
-                  {userInfo?.name ? userInfo.name.charAt(0).toUpperCase() : ""}
-                </div>
+                <Link href="/profile-update" className="inline-block">
+                  <div className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold">
+                    {userInfo?.name
+                      ? userInfo.name.charAt(0).toUpperCase()
+                      : ""}
+                  </div>
+                </Link>
               )}
-              <span className="font-medium">{userInfo?.name}</span>
+              <Link
+                href="/profile-update"
+                style={{ color: "white", cursor: "pointer" }}
+              >
+                <span className="font-medium">{userInfo?.name}</span>
+              </Link>
             </div>
+
             <Button
               onPress={() => {
                 auth.removeUser();
@@ -93,7 +110,7 @@ export default function NavbarComponent({
                 }}
                 variant="flat"
               >
-               Get Started
+                Get Started
               </Button>
             </NavbarItem>
           </NavbarContent>

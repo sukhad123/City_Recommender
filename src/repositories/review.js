@@ -51,3 +51,32 @@ export async function deleteReviewsByEmail(email) {
     return false;
   }
 }
+
+// Fetch reviews for a specific user by email
+export async function getReviewsByUserEmail(userEmail) {
+  const user = await prisma.user.findUnique({
+    where: { email: userEmail },
+  });
+  if (!user) {
+    throw new Error(`User with email ${userEmail} not found`);
+  }
+  return prisma.review.findMany({
+    where: { userId: user.id },
+    orderBy: { createdAt: "desc" },
+  });
+}
+
+// Update a review by review ID and new data (comment, city)
+export async function updateReview(id, { comment, city }) {
+  return prisma.review.update({
+    where: { id },
+    data: { comment, city },
+  });
+}
+
+// Delete a single review by its ID
+export async function deleteReview(id) {
+  return prisma.review.delete({
+    where: { id },
+  });
+}
