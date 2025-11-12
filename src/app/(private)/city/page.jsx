@@ -15,6 +15,7 @@ export default function CitiesPage() {
   const [cities, setCities] = useAtom(recommendedCitiesAtom);
   const [loading, setLoading] = useState(true);
   
+  
   console.log("Cities from store:", cities);
 
   useEffect(() => {

@@ -7,6 +7,7 @@ import { useParams, useSearchParams } from "next/navigation";
 
 import LoadingSpinner from "../../../components/ui/spinner";
 import getCityInformation from "../../../../services/core/cityInformation/retrieve_cityInformation";
+import getCityInfo from "../../../../services/core/cityInformation/getCityInfo";
 
 // env for your CDN/S3 base (optional)
 /** Build an image URL using S3/CDN if imageKey exists, else Unsplash fallback 
@@ -46,7 +47,7 @@ export default function CityInfoPage() {
 
         // Try to get city information from the new service first
         console.log("Fetching city information for:", cityName);
-        const cityInfo = await getCityInformation(cityName);
+        const cityInfo = await getCityInfo(cityName);
         setDetails(cityInfo);
         setLoading(false);
 

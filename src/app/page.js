@@ -1,3 +1,4 @@
+"use client"
 import NavbarComponent from "./components/composite/Navbar";
 import { unauthenticatedMenuItems } from "../constants/Navbar/constants.js";
 import { Button } from "@heroui/react";
@@ -7,7 +8,9 @@ import { Building2, Briefcase, GraduationCap, HeartPulse, Users } from "lucide-r
 import SignSignInButton from "./auth/utils/signIn"
 import SignInButton from "./auth/utils/signIn";
 import AboutSection from "./components/AboutUs"
+import { useEffect } from "react";
 export default function Home() {
+  
   return (
     <>
       <NavbarComponent

@@ -104,3 +104,31 @@ export async function searchCitiesByName(query, limit = 10) {
     throw err;
   }
 }
+
+{/**add new city info */}
+export async function addCityCache(cityName, jsonData) {
+  try{
+    const cityData = await prisma.CityDataCache.create({
+      data:{city:cityName, data: jsonData}
+    })
+    return cityData;
+
+  }catch(error)
+  {
+    console.error("Error adding city details:", error);
+  }
+}
+{/**Retrieve city details for a given city */}
+export async function getCityCache(cityName) {
+  try{
+    const cityData = await prisma.CityDataCache.findFirst({
+      where:{city:cityName}
+    })
+    console.log("Retrieved city data:", cityData);
+    return cityData.data;
+
+  }catch(error)
+  {
+    console.error("Error retrieving city details:", error);
+  }
+}
