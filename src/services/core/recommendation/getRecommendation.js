@@ -35,6 +35,7 @@ Use the following criteria to make your recommendations:
 7. Language: Take into account the user's language preference to recommend cities where that language is commonly spoken.  
 
 Always return your output in json format as shown below:
+only response the cities name in json only**********************8
 Sample output format:
 {
   "recommended_cities": ["Toronto", "Vancouver", "Montreal"]}`;

@@ -1,98 +1,22 @@
 // src/app/(private)/city/[name]/page.jsx
-import {
-  getCityDetailsByName,
-  getCitySectionsByName,
-} from "../../../../repositories/cityDetails";
+"use client";
+
+import { useEffect, useState } from "react";
+import { useParams, useSearchParams } from "next/navigation";
+
+
+import LoadingSpinner from "../../../components/ui/spinner";
+import getCityInformation from "../../../../services/core/cityInformation/retrieve_cityInformation";
 
 // env for your CDN/S3 base (optional)
-const CDN_BASE = process.env.NEXT_PUBLIC_CITIES_CDN_BASE;
-
-/** Placeholder data when DB has no row yet. */
-function getPlaceholders(cityName) {
-  const nice = cityName || "This City";
-  return {
-    city: cityName,
-    province: "ON",
-    imageKey: null,
-    gallery: [],
-    jobOpportunities: {
-      topIndustries: ["Tech", "Healthcare", "Education"],
-      growingSectors: ["AI", "Green Energy"],
-      demandByField: { tech: 8.5, healthcare: 7.5, finance: 7.0 },
-    },
-    costOfLiving: {
-      singleMonthly: 2200,
-      familyMonthly: 4800,
-      breakdown: { housing: 1300, food: 450, transit: 150 },
-      currency: "CAD",
-    },
-    weather: {
-      avgTemp: { winterC: -6, summerC: 22 },
-      snowfallCm: 110,
-      rainfallMm: 800,
-    },
-    rent: { oneBed: 2000, twoBed: 2600, basement: 1500, shared: 900 },
-    realEstate: { avgPrice: 850000, trend: "stable", buyVsRent: "depends" },
-    qualityOfLife: {
-      score: 7.8,
-      components: { greenSpace: 8.2, safety: 7.2, commute: 6.9, culture: 8.4 },
-    },
-    education: {
-      schoolBoards: ["Public Board", "Catholic Board"],
-      universities: [{ name: `${nice} University` }],
-      colleges: [{ name: `${nice} College` }],
-    },
-    healthcare: {
-      hospitals: [{ name: "General Hospital", distanceKm: 3.5 }],
-      clinicsCount: 75,
-      avgWaitDays: 6,
-      mentalHealthServices: true,
-    },
-    communityIntegration: {
-      culturalCenters: ["Community Centre"],
-      newcomerServices: ["Settlement Agency"],
-      languages: ["English", "French"],
-    },
-    immigrationSupport: {
-      agencies: ["Local Settlement Org"],
-      languageClassesFree: true,
-      supportGroups: ["Newcomer Group"],
-    },
-    safetyCrime: { crimeIndex: 40, policeStations: 10, programs: ["Watch"] },
-    transportation: {
-      transit: ["Bus", "Light Rail"],
-      bikeLanesKm: 120,
-      walkScore: 70,
-      airports: ["YYY"],
-    },
-    internetTech: {
-      highSpeedAvailability: "98%",
-      typicalDownMbps: 400,
-      techJobsPresence: "medium",
-    },
-    outdoorLifestyle: {
-      parks: 300,
-      majorParks: ["Central Park"],
-      gyms: 120,
-      restaurants: 900,
-      events: ["Food Fest"],
-    },
-    demographics: {
-      population: 500000,
-      ageDistribution: { "0-14": 0.16, "15-64": 0.68, "65+": 0.16 },
-      diversityIndex: 0.72,
-    },
-  };
-}
-
-/** Build an image URL using S3/CDN if imageKey exists, else Unsplash fallback */
+/** Build an image URL using S3/CDN if imageKey exists, else Unsplash fallback 
 function resolveHeroImage(city, province, imageKey) {
   if (CDN_BASE && imageKey) return `${CDN_BASE}/${imageKey}`;
   const display = city?.replace(/_/g, " ") || "Canada";
   return `https://source.unsplash.com/featured/?${encodeURIComponent(
     `${display} ${province || "Canada"}`
   )}`;
-}
+}*/
 
 // UI components
 import CityHeader from "./_components/CityHeader";
@@ -100,29 +24,76 @@ import InfoSection from "./_components/InfoSection";
 import KeyValueList from "./_components/KeyValueList";
 import PillList from "./_components/PillList";
 
-export default async function CityInfoPage({ params, searchParams }) {
-  // Next “dynamic params” are thenable, so await first
-  const awaited = await params;
-  const rawParam = Array.isArray(awaited?.name)
-    ? awaited.name[0]
-    : awaited?.name;
-  const cityName = decodeURIComponent(rawParam || "").replace(/_/g, " ");
+export default function CityInfoPage() {
+  const params = useParams();
+  const searchParams = useSearchParams();
+  const [details, setDetails] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Optional disambiguation via query: /city/Toronto?province=ON
-  const province = searchParams?.province ?? undefined;
+  useEffect(() => {
+    const fetchCityData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
 
-  // Try DB by city + optional province (no slug)
-  const fromDb =
-    (await getCitySectionsByName(cityName, province)) ||
-    (await getCityDetailsByName(cityName, province));
+        // Extract city name from params
+        const rawParam = Array.isArray(params?.name) ? params.name[0] : params?.name;
+        const cityName = decodeURIComponent(rawParam || "").replace(/_/g, " ");
+        const province = searchParams?.get('province') || undefined;
 
-  const details = fromDb || getPlaceholders(cityName);
+        console.log("City name:", cityName);
 
-  const heroSrc = resolveHeroImage(
-    details.city || cityName,
-    details.province,
-    details.imageKey
-  );
+        // Try to get city information from the new service first
+        console.log("Fetching city information for:", cityName);
+        const cityInfo = await getCityInformation(cityName);
+        setDetails(cityInfo);
+        setLoading(false);
+
+        console.log("City info received:", cityInfo);
+        
+    
+      } catch (error) {
+        console.error("Error fetching city information:", error);
+        
+        
+        // Fallback to DB or placeholders
+      
+      } 
+    };
+
+    fetchCityData();
+  }, [params, searchParams]);
+
+  // Show loading spinner while fetching data
+  if (loading) {
+    return <LoadingSpinner />;
+  }
+
+  // Show error state if needed
+  if (error && !details) {
+    return (
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-danger mb-4">Error Loading City Data</h1>
+          <p className="text-default-500">{error.message}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!details) {
+    return (
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-foreground mb-4">City Not Found</h1>
+          <p className="text-default-500">Unable to load city information.</p>
+        </div>
+      </div>
+    );
+  }
+
+ 
 
   const jobs = details.jobOpportunities || {};
   const col = details.costOfLiving || {};
@@ -141,27 +112,23 @@ export default async function CityInfoPage({ params, searchParams }) {
   const demo = details.demographics || {};
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8">
-      <CityHeader
-        title={details.city || cityName}
-        subtitle={details.province ? `Province: ${details.province}` : ""}
-        imageUrl={heroSrc}
-      />
+    <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
+      
 
       {/* Job Opportunities */}
       <InfoSection title="Job Opportunities" subtitle="Industries & demand">
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-6 md:grid-cols-2">
           <div>
-            <h4 className="font-semibold mb-2">Top Industries</h4>
+            <h4 className="font-semibold mb-3 text-foreground">Top Industries</h4>
             <PillList items={jobs.topIndustries || []} />
           </div>
           <div>
-            <h4 className="font-semibold mb-2">Growing Sectors</h4>
+            <h4 className="font-semibold mb-3 text-foreground">Growing Sectors</h4>
             <PillList items={jobs.growingSectors || []} />
           </div>
         </div>
-        <div className="mt-4">
-          <h4 className="font-semibold mb-2">Demand by Field (0–10)</h4>
+        <div className="mt-6">
+          <h4 className="font-semibold mb-3 text-foreground">Demand by Field (0–10)</h4>
           <KeyValueList
             items={Object.entries(jobs.demandByField || {}).map(([k, v]) => ({
               label: k,
@@ -186,8 +153,8 @@ export default async function CityInfoPage({ params, searchParams }) {
           ].filter(Boolean)}
         />
         {col.breakdown && (
-          <div className="mt-4">
-            <h4 className="font-semibold mb-2">Breakdown</h4>
+          <div className="mt-6">
+            <h4 className="font-semibold mb-3 text-foreground">Breakdown</h4>
             <KeyValueList
               items={Object.entries(col.breakdown).map(([k, v]) => ({
                 label: k,
@@ -503,12 +470,14 @@ export default async function CityInfoPage({ params, searchParams }) {
         )}
       </InfoSection>
 
-      <p className="text-xs text-gray-500">
-        Last updated:{" "}
-        {details.updatedAt
-          ? new Date(details.updatedAt).toLocaleDateString()
-          : "—"}
-      </p>
+      <div className="text-center py-4">
+        <p className="text-xs text-default-400">
+          Last updated:{" "}
+          {details.updatedAt
+            ? new Date(details.updatedAt).toLocaleDateString()
+            : "—"}
+        </p>
+      </div>
     </div>
   );
 }

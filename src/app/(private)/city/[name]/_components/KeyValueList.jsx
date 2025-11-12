@@ -1,16 +1,28 @@
+import { Chip } from '@heroui/react'
+
 /**
  * items: [{ label: string, value: string }]
  */
 export default function KeyValueList({ items = [] }) {
   if (!items || items.length === 0) {
-    return <p className="text-gray-500 text-sm">No data available</p>;
+    return (
+      <p className="text-default-500 text-sm italic">
+        No data available
+      </p>
+    );
   }
+  
   return (
-    <dl className="grid gap-2 sm:grid-cols-2">
+    <dl className="grid gap-3 sm:grid-cols-2">
       {items.map((it, idx) => (
-        <div key={`${it.label}-${idx}`} className="flex justify-between gap-4">
-          <dt className="text-gray-500">{it.label}</dt>
-          <dd className="font-medium">{it.value}</dd>
+        <div 
+          key={`${it.label}-${idx}`} 
+          className="flex justify-between items-center gap-4 p-3 bg-default-50 rounded-lg"
+        >
+          <dt className="text-default-600 font-medium">{it.label}</dt>
+          <dd className="font-semibold text-foreground">
+            {typeof it.value === 'number' ? it.value.toLocaleString() : it.value}
+          </dd>
         </div>
       ))}
     </dl>

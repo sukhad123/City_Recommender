@@ -1,8 +1,9 @@
 "use client";
-
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@heroui/react";
 import getRecommendation from "../../../services/core/recommendation/getRecommendation.js";
+import { useAtom } from "jotai";
+
 import JobFieldSelect from "./_components/JobFieldSelect";
 import CostOfLiving from "./_components/CostOfLiving";
 import RentalPriceInput from "./_components/RentalPriceInput";
@@ -13,6 +14,9 @@ import LanguagePrefSelect from "./_components/LanguagePrefSelect";
 import ImmigrationStatusSelect from "./_components/ImmigrationStatusSelect";
 import RecommendationsModal from "./_components/RecommendationsModal";
 import CitySizeSelect from "./_components/CitySizeSelect";
+import { useRouter } from "next/navigation";
+import { recommendedCitiesAtom } from "../../../store/cities";
+
 import { useAuthInfo } from "../../auth/utils/getCurrentUserDetails";
 import {
   upsertUserPreferences,
@@ -23,6 +27,7 @@ import { getCityRecommendations } from "../../../repositories/recommendation";
 import { saveCityRecommendations, getCityRecommendationsForUser, clearCityRecommendations } from "../../../repositories/cityRecommendations";
 
 export default function UserPreferencesPage() {
+  const router = useRouter();
   const auth = useAuthInfo();
   const userEmail = useMemo(() => auth?.email ?? auth?.user?.email ?? "", [auth]);
 
@@ -44,6 +49,7 @@ export default function UserPreferencesPage() {
   const [recModalOpen, setRecModalOpen] = useState(false);
   const [resultMsg, setResultMsg] = useState("");
   const [recommendations, setRecommendations] = useState([]);
+  const [cities, setCities] = useAtom(recommendedCitiesAtom);
 
   const clearForm = () => {
     setJobField("");
@@ -148,16 +154,20 @@ export default function UserPreferencesPage() {
       await upsertUserPreferences(userEmail, dbPayload);
       setHasPrefs(true);
 
+    
       const recs = await getRecommendation(flaskPayload);
       alert("Preferences saved. See recommended cities based on your preferences.", recs);
+      console.log("Recommendation",recs);
       const ranked = recs || [];
+      setCities(ranked.recommended_cities);
 
       await saveCityRecommendations(userEmail, ranked);
       const saved = await getCityRecommendationsForUser(userEmail);
 
-      setRecommendations(saved);
-      setResultMsg("Preferences saved successfully");
-      setRecModalOpen(true);
+      //setRecommendations(saved);
+//setResultMsg("Preferences saved successfully");
+     // setRecModalOpen(true);
+      router.push("/city");
     } catch (err) {
       console.error(err);
       setRecommendations([]);

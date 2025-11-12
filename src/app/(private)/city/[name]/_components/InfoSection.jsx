@@ -1,13 +1,18 @@
+import { Card, CardBody, Divider } from '@heroui/react'
+
 export default function InfoSection({ title, subtitle, children }) {
   return (
-    <section className="rounded-xl border p-5">
-      <div className="mb-4">
-        <h2 className="text-xl font-semibold">{title}</h2>
-        {subtitle ? (
-          <p className="text-sm text-gray-500 mt-1">{subtitle}</p>
-        ) : null}
-      </div>
-      <div className="space-y-2">{children}</div>
-    </section>
+    <Card shadow="sm">
+      <CardBody className="p-6">
+        <div className="mb-6">
+          <h2 className="text-xl font-semibold text-foreground mb-2">{title}</h2>
+          {subtitle && (
+            <p className="text-sm text-default-500">{subtitle}</p>
+          )}
+          <Divider className="mt-3" />
+        </div>
+        <div className="space-y-4">{children}</div>
+      </CardBody>
+    </Card>
   );
 }
