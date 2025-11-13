@@ -2,6 +2,7 @@
 import { prisma } from "../db/prisma";
 
 export async function saveCityRecommendations(userEmail, raw) {
+  console.log("raw:",raw);
   const user = await prisma.user.findUnique({
     where: { email: userEmail },
     select: { id: true },
