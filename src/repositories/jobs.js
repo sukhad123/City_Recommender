@@ -4,7 +4,7 @@ import "server-only";
 
 const ADZUNA_BASE = "https://api.adzuna.com/v1/api/jobs/ca/search/1";
 
-// Normalize "where" so it matches what worked in your Rapid test
+// Normalize "where"
 function buildWhere({ city, province }) {
   // Province may come as code ("ON") or name ("Ontario")
   // Prefer full province name in "where", because Adzuna responds better to names.
