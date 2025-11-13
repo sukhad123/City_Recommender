@@ -11,18 +11,14 @@ import {
 } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { City, User, Compass } from "lucide-react";
+import { City, User, Compass, Map } from "lucide-react";
 
 export default function Hero({ email }) {
   const router = useRouter();
 
   return (
-    <div className="flex items-center justify-center min-h-screen   from-blue-50   to-blue-100 p-1">
-      <Card
-        shadow="lg"
-        radius="lg"
-        className="w-full max-w-md  backdrop-blur-md"
-      >
+    <div className="flex items-center justify-center min-h-screen from-blue-50 to-blue-100 p-1">
+      <Card shadow="lg" radius="lg" className="w-full max-w-md backdrop-blur-md">
         <CardHeader className="flex flex-col items-center text-center space-y-3">
           <div>
             <h1 className="text-3xl font-bold text-primary">Welcome 👋</h1>
@@ -45,25 +41,22 @@ export default function Hero({ email }) {
 
         <Divider />
 
-        <CardFooter className="flex flex-col sm:flex-row gap-3 justify-center">
+      <CardFooter className="flex flex-wrap justify-center gap-3 p-3">
           <Button
             color="primary"
             variant="solid"
             fullWidth
             startContent={<Compass size={18} />}
             onPress={() => alert("City search coming soon!")}
-          ></Button>
+          >
+            Search
+          </Button>
 
           <Button
             color="secondary"
             variant="solid"
             fullWidth
-            startContent={
-              <User
-                size={36}
-                style={{ minWidth: 18, minHeight: 18,}}
-              />
-            }
+            startContent={<User size={18} />}
             onPress={() => router.push("/profile-update")}
           >
             Update Profile
@@ -77,6 +70,17 @@ export default function Hero({ email }) {
               startContent={<Compass size={18} />}
             >
               Find My City
+            </Button>
+          </Link>
+
+          <Link href="/map" className="w-full sm:w-auto">
+            <Button
+              color="warning"
+              variant="solid"
+              fullWidth
+              startContent={<Map size={18} />}
+            >
+              Interactive Map
             </Button>
           </Link>
         </CardFooter>
