@@ -160,7 +160,7 @@ export default function UserPreferencesPage() {
       console.log("Recommendation",recs);
       const ranked = recs || [];
       setCities(ranked.recommended_cities);
-
+//TODO: Save city Recommendations to DB
       // await saveCityRecommendations(userEmail, ranked);
       // const saved = await getCityRecommendationsForUser(userEmail);
 

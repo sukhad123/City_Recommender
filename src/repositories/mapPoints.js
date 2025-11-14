@@ -1,6 +1,6 @@
 import "server-only";
 import { getUserRecommendationsByEmail } from "./recommendations";
-import { getCityDetailsByName } from "./cityDetails";
+import { getCityDetailsByName } from "./CityDetails";
 
 /**
  * Geocode a city/province using OpenStreetMap Nominatim

@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { getUserMapPointsByEmail } from "../../../repositories/mapPoints";
-
+import {getUserMapPointsByEmail} from "../../../src/repositories/mapPoints"
 export async function POST(req) {
   try {
     const { email } = await req.json();

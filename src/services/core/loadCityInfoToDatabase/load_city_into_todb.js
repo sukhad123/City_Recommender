@@ -353,7 +353,7 @@ export default async function loadCityIntoDB() {
     "Carcross",
     "Whitehorse",
   ];
-  for (i = 50; i < cities.length; i++) {
+  for (i = 0; i < cities.length; i++) {
     //loop through each city and save to db
     try {
         //Step 1: Let's call gpt god to get city data
