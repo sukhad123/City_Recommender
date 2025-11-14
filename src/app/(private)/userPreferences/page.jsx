@@ -51,7 +51,6 @@ export default function UserPreferencesPage() {
   const [recommendations, setRecommendations] = useState([]);
   const [cities, setCities] = useAtom(recommendedCitiesAtom);
 
-
   const clearForm = () => {
     setJobField("");
     setCostOfLiving("");
@@ -76,7 +75,6 @@ export default function UserPreferencesPage() {
           setHasPrefs(false);
           return;
         }
-
         setJobField(prefs.jobField ?? "");
         setCostOfLiving(prefs.costOfLiving ?? "");
         setRentalPrice(typeof prefs.rentalPrice === "number" ? String(prefs.rentalPrice) : "");
@@ -158,13 +156,13 @@ export default function UserPreferencesPage() {
 
     
       const recs = await getRecommendation(flaskPayload);
+      alert("Preferences saved. See recommended cities based on your preferences.", recs);
       console.log("Recommendation",recs);
       const ranked = recs || [];
       setCities(ranked.recommended_cities);
 
-      //await saveCityRecommendations(userEmail, ranked);
-      //const saved = await getCityRecommendationsForUser(userEmail);
-    
+      // await saveCityRecommendations(userEmail, ranked);
+      // const saved = await getCityRecommendationsForUser(userEmail);
 
       //setRecommendations(saved);
 //setResultMsg("Preferences saved successfully");
@@ -204,110 +202,114 @@ export default function UserPreferencesPage() {
 
   return (
     <>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-6 p-4 max-w-md">
-    
-        <div className="flex flex-col">
-          <JobFieldSelect
-            value={jobField}
-            onChange={onChangeClear(setJobField, "jobField")}
-            isDisabled={loadingPrefs || submitting || deleting}
-          />
-          {errors.jobField ? <p className="text-sm text-danger mt-1">{errors.jobField}</p> : null}
+      <div className="flex justify-center items-start min-h-screen py-8">
+        <div className="w-full max-w-2xl">
+          <div className="shadow-lg rounded-2xl bg-gray-900">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-6 p-6">
+              <h2 className="text-2xl font-bold text-center text-white mb-2">User Preferences</h2>
+
+              <div className="flex flex-col">
+                <JobFieldSelect
+                  value={jobField}
+                  onChange={onChangeClear(setJobField, "jobField")}
+                  isDisabled={loadingPrefs || submitting || deleting}
+                />
+                {errors.jobField ? <p className="text-sm text-danger mt-1">{errors.jobField}</p> : null}
+              </div>
+
+              <div className="flex flex-col">
+                <CostOfLiving
+                  value={costOfLiving}
+                  onChange={onChangeClear(setCostOfLiving, "costOfLiving")}
+                  isDisabled={loadingPrefs || submitting || deleting}
+                />
+                {errors.costOfLiving ? <p className="text-sm text-danger mt-1">{errors.costOfLiving}</p> : null}
+              </div>
+
+              <div className="flex flex-col">
+                <RentalPriceInput
+                  value={rentalPrice}
+                  onChange={onChangeClear(setRentalPrice, "rentalPrice")}
+                  isDisabled={loadingPrefs || submitting || deleting}
+                />
+                {errors.rentalPrice ? <p className="text-sm text-danger mt-1">{errors.rentalPrice}</p> : null}
+              </div>
+
+              <div className="flex flex-col">
+                <WeatherPrefSelect
+                  value={weather}
+                  onChange={onChangeClear(setWeather, "weather")}
+                  isDisabled={loadingPrefs || submitting || deleting}
+                />
+                {errors.weather ? <p className="text-sm text-danger mt-1">{errors.weather}</p> : null}
+              </div>
+
+              <div className="flex flex-col">
+                <CitySizeSelect
+                  value={citySize}
+                  onChange={onChangeClear(setCitySize, "citySize")}
+                  isDisabled={loadingPrefs || submitting || deleting}
+                />
+                {errors.citySize ? <p className="text-sm text-danger mt-1">{errors.citySize}</p> : null}
+              </div>
+
+              <div className="flex flex-col">
+                <ProvinceSelect
+                  value={province}
+                  onChange={onChangeClear(setProvince, "province")}
+                  isDisabled={loadingPrefs || submitting || deleting}
+                />
+                {errors.province ? <p className="text-sm text-danger mt-1">{errors.province}</p> : null}
+              </div>
+
+              <div className="flex flex-col">
+                <LifeStage
+                  value={lifeStage}
+                  onChange={onChangeClear(setLifeStage, "lifeStage")}
+                  isDisabled={loadingPrefs || submitting || deleting}
+                />
+                {errors.lifeStage ? <p className="text-sm text-danger mt-1">{errors.lifeStage}</p> : null}
+              </div>
+
+              <div className="flex flex-col">
+                <LanguagePrefSelect
+                  value={language}
+                  onChange={onChangeClear(setLanguage, "language")}
+                  isDisabled={loadingPrefs || submitting || deleting}
+                />
+                {errors.language ? <p className="text-sm text-danger mt-1">{errors.language}</p> : null}
+              </div>
+
+              <div className="flex flex-col">
+                <ImmigrationStatusSelect
+                  value={immigrationStatus}
+                  onChange={onChangeClear(setImmigrationStatus, "immigrationStatus")}
+                  isDisabled={loadingPrefs || submitting || deleting}
+                />
+                {errors.immigrationStatus ? <p className="text-sm text-danger mt-1">{errors.immigrationStatus}</p> : null}
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <Button type="submit" color="primary" isLoading={submitting} isDisabled={loadingPrefs || deleting}>
+                  {submitting ? "Saving..." : loadingPrefs ? "Loading..." : "Submit"}
+                </Button>
+                {hasPrefs ? (
+                  <Button
+                    type="button"
+                    color="danger"
+                    variant="flat"
+                    onPress={handleDelete}
+                    isLoading={deleting}
+                    isDisabled={loadingPrefs || submitting}
+                  >
+                    {deleting ? "Deleting..." : "Delete Preferences"}
+                  </Button>
+                ) : null}
+              </div>
+            </form>
+          </div>
         </div>
-
-        <div className="flex flex-col">
-          <CostOfLiving
-            value={costOfLiving}
-            onChange={onChangeClear(setCostOfLiving, "costOfLiving")}
-            isDisabled={loadingPrefs || submitting || deleting}
-          />
-          {errors.costOfLiving ? <p className="text-sm text-danger mt-1">{errors.costOfLiving}</p> : null}
-        </div>
-
-        <div className="flex flex-col">
-          <RentalPriceInput
-            value={rentalPrice}
-            onChange={onChangeClear(setRentalPrice, "rentalPrice")}
-            isDisabled={loadingPrefs || submitting || deleting}
-          />
-          {errors.rentalPrice ? <p className="text-sm text-danger mt-1">{errors.rentalPrice}</p> : null}
-        </div>
-
-        <div className="flex flex-col">
-          <WeatherPrefSelect
-            value={weather}
-            onChange={onChangeClear(setWeather, "weather")}
-            isDisabled={loadingPrefs || submitting || deleting}
-          />
-          {errors.weather ? <p className="text-sm text-danger mt-1">{errors.weather}</p> : null}
-        </div>
-
-        <div className="flex flex-col">
-          <CitySizeSelect
-            value={citySize}
-            onChange={onChangeClear(setCitySize, "citySize")}
-            isDisabled={loadingPrefs || submitting || deleting}
-          />
-          {errors.citySize ? <p className="text-sm text-danger mt-1">{errors.citySize}</p> : null}
-        </div>
-
-        <div className="flex flex-col">
-          <ProvinceSelect
-            value={province}
-            onChange={onChangeClear(setProvince, "province")}
-            isDisabled={loadingPrefs || submitting || deleting}
-          />
-          {errors.province ? <p className="text-sm text-danger mt-1">{errors.province}</p> : null}
-        </div>
-
-        <div className="flex flex-col">
-          <LifeStage
-            value={lifeStage}
-            onChange={onChangeClear(setLifeStage, "lifeStage")}
-            isDisabled={loadingPrefs || submitting || deleting}
-          />
-          {errors.lifeStage ? <p className="text-sm text-danger mt-1">{errors.lifeStage}</p> : null}
-        </div>
-
-        <div className="flex flex-col">
-          <LanguagePrefSelect
-            value={language}
-            onChange={onChangeClear(setLanguage, "language")}
-            isDisabled={loadingPrefs || submitting || deleting}
-          />
-          {errors.language ? <p className="text-sm text-danger mt-1">{errors.language}</p> : null}
-        </div>
-
-        <div className="flex flex-col">
-          <ImmigrationStatusSelect
-            value={immigrationStatus}
-            onChange={onChangeClear(setImmigrationStatus, "immigrationStatus")}
-            isDisabled={loadingPrefs || submitting || deleting}
-          />
-          {errors.immigrationStatus ? <p className="text-sm text-danger mt-1">{errors.immigrationStatus}</p> : null}
-        </div>
-
-        <div className="flex gap-3">
-          <Button type="submit" color="primary" isLoading={submitting} isDisabled={loadingPrefs || deleting}>
-            {submitting ? "Saving..." : loadingPrefs ? "Loading..." : "Submit"}
-          </Button>
-
-        
-          {hasPrefs ? (
-            <Button
-              type="button"
-              color="danger"
-              variant="flat"
-              onPress={handleDelete}
-              isLoading={deleting}
-              isDisabled={loadingPrefs || submitting}
-            >
-              {deleting ? "Deleting..." : "Delete Preferences"}
-            </Button>
-          ) : null}
-        </div>
-      </form>
-
+      </div>
       <RecommendationsModal
         isOpen={recModalOpen}
         onClose={() => setRecModalOpen(false)}

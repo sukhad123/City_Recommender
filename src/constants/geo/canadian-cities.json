@@ -1,0 +1,15 @@
+{
+  "AB": ["Calgary", "Edmonton", "Red Deer", "Lethbridge", "Medicine Hat"],
+  "BC": ["Vancouver", "Victoria", "Surrey", "Burnaby", "Kelowna", "Kamloops"],
+  "MB": ["Winnipeg", "Brandon", "Steinbach"],
+  "NB": ["Moncton", "Saint John", "Fredericton"],
+  "NL": ["St. John's", "Mount Pearl", "Corner Brook"],
+  "NS": ["Halifax", "Sydney", "Truro"],
+  "ON": ["Toronto", "Ottawa", "Mississauga", "Brampton", "Hamilton", "London", "Kitchener", "Windsor"],
+  "PE": ["Charlottetown", "Summerside"],
+  "QC": ["Montréal", "Québec City", "Laval", "Gatineau", "Longueuil", "Sherbrooke"],
+  "SK": ["Saskatoon", "Regina", "Prince Albert"],
+  "NT": ["Yellowknife"],
+  "NU": ["Iqaluit"],
+  "YT": ["Whitehorse"]
+}

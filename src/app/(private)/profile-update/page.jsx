@@ -18,7 +18,7 @@ import {
 
 import { useRouter } from "next/navigation";
 import { deleteReviewsByEmail } from "../../../repositories/review";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import UserReviews from "./_components/UserReviews";
 
 const COGNITO_REGION = "us-east-2";
 
@@ -170,7 +170,7 @@ function ProfilePage() {
   };
 
   return (
-    <ProfileForm
+    <><ProfileForm
       formData={formData}
       setFormData={setFormData}
       onSave={handleSave}
@@ -182,6 +182,9 @@ function ProfilePage() {
       signedImageUrl={signedImageUrl}
       handleDeleteImage={handleDeleteImage}
     />
+
+    <UserReviews userEmail={user.email} />
+    </>
   );
 }
 
