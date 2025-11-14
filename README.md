@@ -17,7 +17,9 @@ This document provides everything you need to **set up**, **develop**, and **con
 
 ### 📦 Prerequisites
 - **Node.js** ≥ 18
-- **npm** or **yarn**
+- **npm** or **yarn*
+## Product Manager: Adnan Mohammad
+- 
 
 ### 🛠️ Installation
 ```bash
