@@ -1,9 +1,10 @@
 // src/app/(private)/city/[name]/page.jsx
 "use client";
 
+import  SelectCity  from "./_components/select";
 import { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
-
+import React from "react";
 
 import LoadingSpinner from "../../../components/ui/spinner";
 import getCityInformation from "../../../../services/core/cityInformation/retrieve_cityInformation";
@@ -18,19 +19,37 @@ function resolveHeroImage(city, province, imageKey) {
     `${display} ${province || "Canada"}`
   )}`;
 }*/
-
+import CityComparePage from "./_components/compare";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+  useDisclosure,
+} from "@heroui/react";
 // UI components
 import CityHeader from "./_components/CityHeader";
 import InfoSection from "./_components/InfoSection";
 import KeyValueList from "./_components/KeyValueList";
 import PillList from "./_components/PillList";
-
+ 
 export default function CityInfoPage() {
+
+  //Fetch the city data async from the data once the page loads
   const params = useParams();
   const searchParams = useSearchParams();
   const [details, setDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const {isOpen, onOpen, onOpenChange} = useDisclosure();
+ const[city, setCity] = useState("");
+  const[showCompare, setShowCompare] = useState(false);
+
+  const handleLoadToNewPage = () => {
+
+  };
 
   useEffect(() => {
     const fetchCityData = async () => {
@@ -42,7 +61,7 @@ export default function CityInfoPage() {
         const rawParam = Array.isArray(params?.name) ? params.name[0] : params?.name;
         const cityName = decodeURIComponent(rawParam || "").replace(/_/g, " ");
         const province = searchParams?.get('province') || undefined;
-
+        setCity(cityName);
         console.log("City name:", cityName);
 
         // Try to get city information from the new service first
@@ -93,8 +112,8 @@ export default function CityInfoPage() {
       </div>
     );
   }
-
  
+
 
   const jobs = details.jobOpportunities || {};
   const col = details.costOfLiving || {};
@@ -114,7 +133,29 @@ export default function CityInfoPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
-      
+      {/**Compare with other cities */}
+       <Button onPress={onOpen}>Compare with Other Cities</Button>
+      <Modal  isOpen={isOpen} onOpenChange={onOpenChange}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex  flex-col gap-1">City Comparison Feature</ModalHeader>
+              <ModalBody className="w-full">
+        <SelectCity initialCity={city}  />
+ 
+    {/**Once Selection load the comparision */}
+               
+              </ModalBody>
+              <ModalFooter>
+                <Button color="danger" variant="light" onPress={onClose}>
+                  Close
+                </Button>
+               
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
 
       {/* Job Opportunities */}
       <InfoSection title="Job Opportunities" subtitle="Industries & demand">
