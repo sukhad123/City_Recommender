@@ -9,28 +9,8 @@ import {
   Select,
   SelectItem,
 } from "@heroui/react";
-
-const canadianCities = [
-  "Toronto",
-  "Montreal",
-  "Vancouver",
-  "Calgary",
-  "Edmonton",
-  "Ottawa",
-  "Winnipeg",
-  "Quebec_City",
-  "Hamilton",
-  "Kitchener",
-  "London",
-  "Victoria",
-  "Halifax",
-  "Oshawa",
-  "Windsor",
-  "Saskatoon",
-  "Regina",
-  "St_Johns",
-  "Kelowna",
-];
+import { cities } from "../../../../utils/cities";
+import { CitySearch } from "./CitySearch";
 
 export default function UserReviews({ userEmail }) {
   const [reviews, setReviews] = useState([]);
@@ -38,6 +18,7 @@ export default function UserReviews({ userEmail }) {
   const [editData, setEditData] = useState({ comment: "", city: "" });
   const [isSaving, setIsSaving] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     if (!userEmail) return;
@@ -124,13 +105,13 @@ export default function UserReviews({ userEmail }) {
     return <div className="mt-6 text-gray-500">No reviews found.</div>;
 
   return (
-    <div className="mt-8 space-y-4">
+    <div className="mt-8 space-y-4 mb-16">
       <h2 className="text-xl font-semibold mb-3">My Reviews</h2>
       {reviews.map((review) => (
         <Card key={review.id} className="w-full">
           <CardBody>
             {editingId === review.id ? (
-              <>
+              <div className="flex flex-col gap-4">
                 <div>
                   <label>Comment</label>
                   <Input
@@ -146,27 +127,18 @@ export default function UserReviews({ userEmail }) {
                 </div>
                 <div>
                   <label>City</label>
-                  <Select
-                    selectedKeys={editData.city ? [editData.city] : []}
-                    onSelectionChange={(keys) => {
-                      // keys is a set or array depending on the component API
-                      // If Set: Array.from(keys)[0]
-                      // If Array: keys[0]
-                      const value = Array.isArray(keys)
-                        ? keys[0]
-                        : Array.from(keys)[0];
-                      setEditData((prev) => ({ ...prev, city: value }));
-                    }}
-                    disabled={isSaving}
-                  >
-                    {canadianCities.map((city) => (
-                      <SelectItem key={city} value={city}>
-                        {city.replace("_", " ")}
-                      </SelectItem>
-                    ))}
-                  </Select>
+                  {editingId === review.id && (
+                    <CitySearch
+                      value={editData.city}
+                      onChange={(city) =>
+                        setEditData((prev) => ({ ...prev, city }))
+                      }
+                      disabled={isSaving}
+                      fullHeight // custom prop—see below
+                    />
+                  )}
                 </div>
-              </>
+              </div>
             ) : (
               <>
                 <p className="text-gray-700">
