@@ -6,13 +6,19 @@ export default async function handler(req, res) {
 
   if (req.method === "PUT") {
     const { comment, city } = req.body;
-    if (!comment || !city)
+    if (!comment || !city) {
       return res.status(400).json({ error: "Missing comment or city" });
+    }
+
     try {
       const updated = await updateReview(id, { comment, city });
       return res.status(200).json(updated);
     } catch (error) {
-      return res.status(500).json({ error: error.message });
+      return res.status(500).json({
+        error: error.message,
+        id,
+        body: { comment, city }
+      });
     }
   } else if (req.method === "DELETE") {
     try {

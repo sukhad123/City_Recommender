@@ -1,14 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import {
-  Button,
-  Input,
-  Card,
-  CardBody,
-  CardFooter,
-  Select,
-  SelectItem,
-} from "@heroui/react";
+import { Button, Input, Card, CardBody, CardFooter } from "@heroui/react";
 import { cities } from "../../../../utils/cities";
 import { CitySearch } from "./CitySearch";
 
@@ -18,7 +10,6 @@ export default function UserReviews({ userEmail }) {
   const [editData, setEditData] = useState({ comment: "", city: "" });
   const [isSaving, setIsSaving] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
 
   useEffect(() => {
     if (!userEmail) return;
@@ -65,8 +56,9 @@ export default function UserReviews({ userEmail }) {
   };
 
   const handleSave = async (id) => {
-    if (!editData.comment.trim() || !editData.city.trim()) {
-      alert("Comment and City cannot be empty.");
+    const isValidCity = cities.includes(editData.city);
+    if (!editData.comment.trim() || !isValidCity) {
+      alert("Comment and City must be set to a valid city.");
       return;
     }
     setIsSaving(true);
@@ -107,91 +99,93 @@ export default function UserReviews({ userEmail }) {
   return (
     <div className="mt-8 space-y-4 mb-16">
       <h2 className="text-xl font-semibold mb-3">My Reviews</h2>
-      {reviews.map((review) => (
-        <Card key={review.id} className="w-full">
-          <CardBody>
-            {editingId === review.id ? (
-              <div className="flex flex-col gap-4">
-                <div>
-                  <label>Comment</label>
-                  <Input
-                    value={editData.comment}
-                    onChange={(e) =>
-                      setEditData((prev) => ({
-                        ...prev,
-                        comment: e.target.value,
-                      }))
-                    }
-                    disabled={isSaving}
-                  />
-                </div>
-                <div>
-                  <label>City</label>
-                  {editingId === review.id && (
+      {reviews.map((review) => {
+        // Validate city for Save button per review item
+        const isValidCity = cities.includes(editData.city);
+        return (
+          <Card key={review.id} className="w-full">
+            <CardBody>
+              {editingId === review.id ? (
+                <div className="flex flex-col gap-4">
+                  <div>
+                    <label>Comment</label>
+                    <Input
+                      value={editData.comment}
+                      onChange={(e) =>
+                        setEditData((prev) => ({
+                          ...prev,
+                          comment: e.target.value,
+                        }))
+                      }
+                      disabled={isSaving}
+                    />
+                  </div>
+                  <div>
+                    <label>City</label>
                     <CitySearch
                       value={editData.city}
                       onChange={(city) =>
                         setEditData((prev) => ({ ...prev, city }))
                       }
                       disabled={isSaving}
-                      fullHeight // custom prop—see below
+                      placeholder="Search city…"
                     />
-                  )}
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <>
-                <p className="text-gray-700">
-                  <strong>Comment:</strong> {review.comment}
-                </p>
-                <p className="text-gray-600">
-                  <strong>City:</strong> {review.city.replace("_", " ")}
-                </p>
-                <p className="text-xs text-gray-400">
-                  Last updated: {new Date(review.updatedAt).toLocaleString()}
-                </p>
-              </>
-            )}
-          </CardBody>
-          <CardFooter className="flex gap-2">
-            {editingId === review.id ? (
-              <>
-                <Button
-                  color="primary"
-                  onPress={() => handleSave(review.id)}
-                  disabled={isSaving}
-                >
-                  Save
-                </Button>
-                <Button
-                  color="secondary"
-                  onPress={handleCancel}
-                  disabled={isSaving}
-                >
-                  Cancel
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button
-                  color="primary"
-                  onPress={() => handleEdit(review)}
-                  disabled={isSaving}
-                >
-                  Edit
-                </Button>
-                <Button
-                  color="danger"
-                  onPress={() => handleDelete(review.id)}
-                  disabled={isSaving}
-                >
-                  Delete
-                </Button>
-              </>
-            )}
-          </CardFooter>
-        </Card>
-      ))}
+              ) : (
+                <>
+                  <p className="text-sm text-primary font-semibold">
+                    {review.city.replace("_", " ")}
+                  </p>
+                  <p className="text-lg text-gray-100">{review.comment}</p>
+                  <p className="text-xs text-gray-400">
+                    Last updated: {new Date(review.updatedAt).toLocaleString()}
+                  </p>
+                </>
+              )}
+            </CardBody>
+            <CardFooter className="flex gap-2">
+              {editingId === review.id ? (
+                <>
+                  <Button
+                    color="primary"
+                    onPress={() => handleSave(review.id)}
+                    disabled={
+                      isSaving || !editData.comment.trim() || !isValidCity
+                    }
+                  >
+                    Save
+                  </Button>
+                  <Button
+                    color="secondary"
+                    onPress={handleCancel}
+                    disabled={isSaving}
+                  >
+                    Cancel
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button
+                    color="primary"
+                    onPress={() => handleEdit(review)}
+                    disabled={isSaving}
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    color="danger"
+                    onPress={() => handleDelete(review.id)}
+                    disabled={isSaving}
+                  >
+                    Delete
+                  </Button>
+                </>
+              )}
+            </CardFooter>
+          </Card>
+        );
+      })}
     </div>
   );
 }

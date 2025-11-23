@@ -4,24 +4,19 @@ import { useState } from "react";
 import {
   Button,
   Input,
-  Select,
-  SelectItem,
   Card,
   CardBody,
 } from "@heroui/react";
 import { createReview } from "../../../../repositories/review";
-
-const canadianCities = [
-  "Toronto", "Montreal", "Vancouver", "Calgary", "Edmonton", "Ottawa",
-  "Winnipeg", "Quebec_City", "Hamilton", "Kitchener", "London", "Victoria",
-  "Halifax", "Oshawa", "Windsor", "Saskatoon", "Regina", "St_Johns", "Kelowna"
-];
+import { CitySearch } from "../../profile-update/_components/CitySearch";
+import { cities } from "../../../../utils/cities"; // <-- Import cities for validation
 
 export default function ReviewForm({ email }) {
   const [comment, setComment] = useState("");
   const [city, setCity] = useState("");
 
-  const isSubmitDisabled = !comment.trim() || !city;
+  const isValidCity = cities.includes(city);
+  const isSubmitDisabled = !comment.trim() || !isValidCity;
 
   const handleSubmit = async () => {
     if (isSubmitDisabled) return;
@@ -35,22 +30,14 @@ export default function ReviewForm({ email }) {
     <Card className="w-full">
       <CardBody className="space-y-4">
         <h2 className="text-xl font-bold">Write a Review</h2>
-        <Select
-          label="Select a City"
-          placeholder="Choose..."
-          value={city}
-          onChange={(e) => setCity(e.target.value)}
-          classNames={{
-            listbox: "bg-gray-900 text-gray-100",
-            popoverContent: "bg-gray-900 text-gray-100",
-          }}
-        >
-          {canadianCities.map((c) => (
-            <SelectItem key={c} value={c}>
-              {c.replace("_", " ")}
-            </SelectItem>
-          ))}
-        </Select>
+        <div>
+          <label className="block mb-1">Select a City</label>
+          <CitySearch
+            value={city}
+            onChange={setCity}
+            disabled={false}
+          />
+        </div>
         <Input
           label="Your Comment"
           placeholder="Write your review..."
