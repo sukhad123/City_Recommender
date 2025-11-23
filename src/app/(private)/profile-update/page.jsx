@@ -95,6 +95,7 @@ function ProfilePage() {
       await updateProfileImageByEmail(user.email, url);
       setOriginalData((prev) => ({ ...prev, profileImageUrl: url }));
       alert("Profile picture updated!");
+      window.location.reload();
     } catch (error) {
       alert("Failed to update profile picture in database.");
     }
@@ -160,6 +161,7 @@ function ProfilePage() {
         setSignedImageUrl("");
         deleteProfileImageByEmail(formData.email);
         alert("Profile image deleted.");
+        window.location.reload();
       } else {
         alert("Failed to delete image.");
       }
