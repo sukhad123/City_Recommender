@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Button, Input, Card, CardBody, CardFooter } from "@heroui/react";
 import { cities } from "../../../../utils/cities";
-import { CitySearch } from "./CitySearch";
+import { CitySearch } from "../../../../utils/CitySearch";
 
 export default function UserReviews({ userEmail }) {
   const [reviews, setReviews] = useState([]);

@@ -8,7 +8,7 @@ import {
   CardBody,
 } from "@heroui/react";
 import { createReview } from "../../../../repositories/review";
-import { CitySearch } from "../../profile-update/_components/CitySearch";
+import { CitySearch } from "../../../../utils/CitySearch";
 import { cities } from "../../../../utils/cities"; // <-- Import cities for validation
 
 export default function ReviewForm({ email }) {

@@ -3,7 +3,7 @@ import { getAllReviews } from "../../../../repositories/review";
 import { useEffect, useState } from "react";
 import { Card, CardBody, Spinner, Button } from "@heroui/react";
 import ReviewForm from "./ReviewForm";
-import { CitySearch } from "../../profile-update/_components/CitySearch";
+import { CitySearch } from "../../../../utils/CitySearch";
 import { cities } from "../../../../utils/cities";
 
 export default function ReviewList({ email }) {

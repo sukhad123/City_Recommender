@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { Input } from "@heroui/react";
-import { cities } from "../../../../utils/cities";
+import { cities } from "./cities";
 
 export function CitySearch({ value, onChange, disabled }) {
   const [search, setSearch] = useState("");

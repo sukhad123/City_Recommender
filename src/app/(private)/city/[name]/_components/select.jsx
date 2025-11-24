@@ -1,7 +1,7 @@
 "use client";
 import { Button, Modal, ModalContent, ModalBody, ModalFooter, useDisclosure } from "@heroui/react";
 import CityComparePage from "./compare";
-import { CitySearch } from "../../../profile-update/_components/CitySearch";
+import { CitySearch } from "../../../../../utils/CitySearch";
 
 export default function SelectCity({ initialCity }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
