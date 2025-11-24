@@ -101,20 +101,22 @@ export default function UserPreferencesPage() {
   };
 
   const validateAll = () => {
-    const e = {};
-    if (!jobField) e.jobField = "Select a job field.";
-    if (rentalPrice === "") e.rentalPrice = "Enter your monthly rental budget.";
-    else if (isNaN(Number(rentalPrice))) e.rentalPrice = "Must be a number.";
-    else if (Number(rentalPrice) < 0) e.rentalPrice = "Cannot be negative.";
-    if (!costOfLiving) e.costOfLiving = "Choose a cost of living.";
-    if (!weather) e.weather = "Choose a weather preference.";
-    if (!citySize) e.citySize = "Choose a city size.";
-    if (!lifeStage) e.lifeStage = "Choose your life stage.";
-    if (!language) e.language = "Choose a language preference.";
-    if (!immigrationStatus) e.immigrationStatus = "Choose immigration status.";
-    setErrors(e);
-    return Object.keys(e).length === 0;
-  };
+  const e = {};
+  if (!jobField) e.jobField = "Select a job field.";
+  if (rentalPrice === "") e.rentalPrice = "Enter your monthly rental budget.";
+  else if (isNaN(Number(rentalPrice))) e.rentalPrice = "Must be a number.";
+  else if (Number(rentalPrice) < 800 || Number(rentalPrice) > 5000)
+    e.rentalPrice = "Rental budget must be between $800 and $5000.";
+  if (!costOfLiving) e.costOfLiving = "Choose a cost of living.";
+  if (!weather) e.weather = "Choose a weather preference.";
+  if (!citySize) e.citySize = "Choose a city size.";
+  if (!lifeStage) e.lifeStage = "Choose your life stage.";
+  if (!language) e.language = "Choose a language preference.";
+  if (!immigrationStatus) e.immigrationStatus = "Choose immigration status.";
+  setErrors(e);
+  return Object.keys(e).length === 0;
+};
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
