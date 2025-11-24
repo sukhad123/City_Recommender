@@ -34,7 +34,12 @@ export default function NavbarComponent({
       >
         <NavbarContent className="sm:hidden pr-3" justify="start">
           <NavbarBrand>
-            <p className="font-bold text-inherit">City Recommender</p>
+            <Link
+              href={isAuthenticated ? "/dashboard" : "/"}
+              style={{ color: "white", cursor: "pointer", fontWeight: "bold" }}
+            >
+              City Recommender
+            </Link>
           </NavbarBrand>
         </NavbarContent>
 
