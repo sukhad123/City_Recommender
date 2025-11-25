@@ -105,30 +105,50 @@ export async function searchCitiesByName(query, limit = 10) {
   }
 }
 
-{/**add new city info */}
+{
+  /**add new city info */
+}
 export async function addCityCache(cityName, jsonData) {
-  try{
+  try {
     const cityData = await prisma.CityDataCache.create({
-      data:{city:cityName, data: jsonData}
-    })
+      data: { city: cityName, data: jsonData },
+    });
     return cityData;
-
-  }catch(error)
-  {
+  } catch (error) {
     console.error("Error adding city details:", error);
   }
 }
-{/**Retrieve city details for a given city */}
+{
+  /**Retrieve city details for a given city */
+}
 export async function getCityCache(cityName) {
-  try{
+  try {
     const cityData = await prisma.CityDataCache.findFirst({
-      where:{city:cityName}
-    })
-    console.log("Retrieved city data:", cityData);
+      where: { city: cityName },
+    });
     return cityData.data;
-
-  }catch(error)
-  {
+  } catch (error) {
+    console.error("Error retrieving city details:", error);
+  }
+}
+{
+  /**Update city details for a given city */
+}
+export async function update_city_cache(cityName, data) {
+  try {
+    //find the city id 
+     const city = await prisma.CityDataCache.findFirst({
+      where: { city: cityName },
+    });
+   
+    const cityData = await prisma.CityDataCache.update({
+      where: { id: city.id },
+      data: {
+        data: data,
+      },
+    });
+    return cityData.data;
+  } catch (error) {
     console.error("Error retrieving city details:", error);
   }
 }
