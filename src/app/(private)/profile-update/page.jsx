@@ -19,6 +19,10 @@ import {
 import { useRouter } from "next/navigation";
 import { deleteReviewsByEmail } from "../../../repositories/review";
 import UserReviews from "./_components/UserReviews";
+import SuccessModal from "./_components/SuccessModal";
+import SuccessModalReload from "./_components/SuccessModalReload";
+import ErrorModal from "./_components/ErrorModal";
+import ConfirmModal from "./_components/ConfirmModal";
 
 const COGNITO_REGION = "us-east-2";
 
@@ -37,6 +41,13 @@ function ProfilePage() {
   const [isSaving, setIsSaving] = useState(false);
   const router = useRouter();
   const [signedImageUrl, setSignedImageUrl] = useState("");
+
+  const [successOpen, setSuccessOpen] = useState(false);
+  const [successReloadOpen, setSuccessReloadOpen] = useState(false);
+  const [errorOpen, setErrorOpen] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [modalMsg, setModalMsg] = useState("");
+  const [onConfirmDelete, setOnConfirmDelete] = useState(null);
 
   useEffect(() => {
     async function fetchLatestUser() {
@@ -81,9 +92,11 @@ function ProfilePage() {
       await updateUserNameByEmail(user.email, formData.name);
       await updateProfileImageByEmail(user.email, formData.profileImageUrl);
       setOriginalData({ ...formData });
-      alert("Name updated successfully!");
+      setModalMsg("Name updated successfully!");
+      setSuccessOpen(true);
     } catch (error) {
-      alert("Failed to update Name in Cognito.");
+      setModalMsg("Failed to update Name in Cognito.");
+      setErrorOpen(true);
     }
     setIsSaving(false);
   };
@@ -94,9 +107,11 @@ function ProfilePage() {
     try {
       await updateProfileImageByEmail(user.email, url);
       setOriginalData((prev) => ({ ...prev, profileImageUrl: url }));
-      alert("Profile picture updated!");
+      setModalMsg("Profile picture updated!");
+      setSuccessReloadOpen(true);
     } catch (error) {
-      alert("Failed to update profile picture in database.");
+      setModalMsg("Failed to update profile picture in database.");
+      setErrorOpen(true);
     }
     await fetchSignedImageUrl(url);
   };
@@ -104,16 +119,16 @@ function ProfilePage() {
   // Cancel handler: revert UI state
   const handleCancel = () => {
     setFormData({ ...originalData });
-    alert("Edit cancelled.");
+    setModalMsg("Edit cancelled.");
+    setSuccessOpen(true);
   };
 
-  // Delete handler: remove Cognito user
   const handleDelete = async () => {
-    if (
-      window.confirm(
-        "Are you sure you want to delete your profile? This cannot be undone."
-      )
-    ) {
+    setModalMsg(
+      "Are you sure you want to delete your profile? This cannot be undone."
+    );
+    setConfirmOpen(true);
+    setOnConfirmDelete(() => async () => {
       setIsSaving(true);
       try {
         const client = new CognitoIdentityProviderClient({
@@ -123,15 +138,19 @@ function ProfilePage() {
           AccessToken: user.accessToken,
         });
         await client.send(command);
-        deleteReviewsByEmail(user.email);
-        deleteUserByEmail(user.email);
-        alert("Profile deleted");
-        router.push("/");
+        await deleteReviewsByEmail(user.email);
+        await deleteUserByEmail(user.email);
+        setConfirmOpen(false);
+        setModalMsg("Profile deleted.");
+        setSuccessOpen(true);
+        setTimeout(() => router.push("/"), 1000); // Redirect after success message/modal
       } catch (error) {
-        alert("Failed to delete profile from Cognito.");
+        setConfirmOpen(false);
+        setModalMsg("Failed to delete profile from Cognito.");
+        setErrorOpen(true);
       }
       setIsSaving(false);
-    }
+    });
   };
 
   async function fetchSignedImageUrl(s3Key) {
@@ -159,31 +178,62 @@ function ProfilePage() {
         setFormData((prev) => ({ ...prev, profileImageUrl: "" }));
         setSignedImageUrl("");
         deleteProfileImageByEmail(formData.email);
-        alert("Profile image deleted.");
+        setModalMsg("Profile image deleted.");
+        setSuccessReloadOpen(true);
       } else {
-        alert("Failed to delete image.");
+        setModalMsg("Failed to delete image.");
+        setErrorOpen(true);
       }
     } catch (error) {
-      alert("Failed to delete image.");
+      setModalMsg("Failed to delete image.");
+      setErrorOpen(true);
     }
     setIsSaving(false);
   };
 
   return (
-    <><ProfileForm
-      formData={formData}
-      setFormData={setFormData}
-      onSave={handleSave}
-      onCancel={handleCancel}
-      onDelete={handleDelete}
-      isSaving={isSaving}
-      isFormUnchanged={isFormUnchanged}
-      onImageUpload={handleImageUpload}
-      signedImageUrl={signedImageUrl}
-      handleDeleteImage={handleDeleteImage}
-    />
+    <>
+      <ProfileForm
+        formData={formData}
+        setFormData={setFormData}
+        onSave={handleSave}
+        onCancel={handleCancel}
+        onDelete={handleDelete}
+        isSaving={isSaving}
+        isFormUnchanged={isFormUnchanged}
+        onImageUpload={handleImageUpload}
+        signedImageUrl={signedImageUrl}
+        handleDeleteImage={handleDeleteImage}
+      />
 
-    <UserReviews userEmail={user.email} />
+      <UserReviews userEmail={user.email} />
+      <SuccessModal
+        isOpen={successOpen}
+        onClose={() => {
+          setSuccessOpen(false);
+        }}
+        message={modalMsg}
+      />
+      <SuccessModalReload
+        isOpen={successReloadOpen}
+        onClose={() => {
+          setSuccessReloadOpen(false);
+          window.location.reload()
+        }}
+        message={modalMsg}
+      />
+      <ErrorModal
+        isOpen={errorOpen}
+        onClose={() => setErrorOpen(false)}
+        message={modalMsg}
+      />
+      <ConfirmModal
+        isOpen={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={onConfirmDelete}
+        message={modalMsg}
+        loading={isSaving}
+      />
     </>
   );
 }
