@@ -29,7 +29,7 @@ export default function RecommendationCard({
       <CardBody className="space-y-1">
         <p className="text-lg font-semibold">{displayName}</p>
         <p className="text-xs text-gray-500">
-          {province} • Score {Math.round((score ?? 0) * 10) / 10} • Rank {rank}
+         
         </p>
       </CardBody>
     </Card>

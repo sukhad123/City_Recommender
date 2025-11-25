@@ -58,10 +58,6 @@ model CityRecommendation {
   city        String
   province    String
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, city])
-  @@unique([userId, rank])
-  @@index([userId, rank])
 }
 
 model CityDetails {
@@ -91,6 +87,12 @@ model CityDetails {
 
   @@unique([city, province])
   @@index([province])
+}
+
+model CityDataCache {
+  id   Int    @id @default(autoincrement())
+  city String
+  data Json
 }
 
 enum CanadianCity {
@@ -185,11 +187,4 @@ enum CitySize {
   Small
   Medium
   Large
-}
-
-
-model CityDataCache {
-  id   Int   @id @default(autoincrement())
-  city String
-  data Json
 }

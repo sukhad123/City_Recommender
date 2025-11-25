@@ -34,3 +34,38 @@ export async function getUserRecommendationsByEmail(email) {
 
   return recs;
 }
+
+{/**Save recommendation */}
+export async function save_recommendation(recommendations, userEmail){
+  const user = await prisma.user.findUnique({ where: { email: userEmail } });
+  if (!user) throw new Error(`User with email ${userEmail} not found`);
+console.log("REcommendation",recommendations)
+for (const rec of recommendations) {
+  await prisma.cityRecommendation.create({data:{
+    user: {
+      connect: { id: user.id }
+    },
+    score:0,
+    rank:0,
+    city: rec,
+    province:"Test",
+  }})
+}
+
+} 
+
+{/**Delete Old */}
+export async function delete_rec(userEmail)
+{
+    const user = await prisma.user.findUnique({ where: { email: userEmail } });
+  if (!user) throw new Error(`User with email ${userEmail} not found`);
+  const deleteCities = await prisma.cityRecommendation.deleteMany({
+  where: {
+    userId: {
+      contains:user.id,
+    },
+  },
+})
+return deleteCities
+
+}

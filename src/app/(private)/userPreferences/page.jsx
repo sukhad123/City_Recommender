@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Button } from "@heroui/react";
 import getRecommendation from "../../../services/core/recommendation/getRecommendation.js";
 import { useAtom } from "jotai";
+import save_update_recommendation_service from "../../../services/core/recommendation/saveRecommendation.js"
 
 import JobFieldSelect from "./_components/JobFieldSelect";
 import CostOfLiving from "./_components/CostOfLiving";
@@ -118,6 +119,7 @@ export default function UserPreferencesPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
     if (!userEmail) {
       setResultMsg("You must be signed in to save preferences.");
       setRecModalOpen(true);
@@ -160,14 +162,13 @@ export default function UserPreferencesPage() {
       console.log("Recommendation",recs);
       const ranked = recs || [];
       setCities(ranked.recommended_cities);
-//TODO: Save city Recommendations to DB
-      // await saveCityRecommendations(userEmail, ranked);
+       await save_update_recommendation_service(userEmail, ranked.recommended_cities);
       // const saved = await getCityRecommendationsForUser(userEmail);
 
       //setRecommendations(saved);
 //setResultMsg("Preferences saved successfully");
      // setRecModalOpen(true);
-      router.push("/city");
+     router.push("/city");
     } catch (err) {
       console.error(err);
       setRecommendations([]);
