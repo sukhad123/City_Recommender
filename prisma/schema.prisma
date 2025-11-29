@@ -90,9 +90,10 @@ model CityDetails {
 }
 
 model CityDataCache {
-  id   Int    @id @default(autoincrement())
-  city String
-  data Json
+  id        Int       @id @default(autoincrement())
+  city      String
+  data      Json
+  updatedAt DateTime? @updatedAt
 }
 
 enum CanadianCity {
