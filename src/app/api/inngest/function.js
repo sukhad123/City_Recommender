@@ -3,14 +3,16 @@ import validate_update_city_info from "../../../services/core/validateCityData/c
 
 
 //validate_update_city
+
 export const validate_update_cityData = inngest.createFunction(
   { id: "validate_updateCityData" },
-  { event: "cityData/validate_updateCityData" },
-  //Cron job runs everyday at 2AM
-  { cron: "TZ=America/New_York 0 2 * * *" },
-  async () => {
+  [
+    { event: "cityData/validate_updateCityData" },
+    { cron: "TZ=America/New_York 0 2 * * *" },
+  ],
+  async ({ event, step }) => {
     return await validate_update_city_info();
-  },
+  }
 );
 
 //Test cron job

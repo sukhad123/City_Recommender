@@ -25,7 +25,7 @@ export default async function validate_update_city_info()
            //For non existing datas
            const new_data = await getCityInformation(city);
            //Update the new data in database
-           const data = update_city_cache(city,new_data.data);
+           const data = update_city_cache(city,new_data);
            console.log("Data Updated Successfully");
 
         }
@@ -39,6 +39,7 @@ export default async function validate_update_city_info()
 
 
     }
+
 
 
 }

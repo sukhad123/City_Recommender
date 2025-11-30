@@ -140,13 +140,15 @@ export async function update_city_cache(cityName, data) {
      const city = await prisma.CityDataCache.findFirst({
       where: { city: cityName },
     });
-   
+   console.log("UPdating city");
+   console.log(data);
     const cityData = await prisma.CityDataCache.update({
       where: { id: city.id },
       data: {
         data: data,
       },
     });
+    console.log("Updated Data 0f ", cityName)
     return cityData.data;
   } catch (error) {
     console.error("Error retrieving city details:", error);
