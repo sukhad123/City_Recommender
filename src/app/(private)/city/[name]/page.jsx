@@ -34,6 +34,7 @@ import CityHeader from "./_components/CityHeader";
 import InfoSection from "./_components/InfoSection";
 import KeyValueList from "./_components/KeyValueList";
 import PillList from "./_components/PillList";
+import { getCityLastUpdatedAt } from "../../../../repositories/CityDetails";
  
 export default function CityInfoPage() {
 
@@ -46,6 +47,7 @@ export default function CityInfoPage() {
   const {isOpen, onOpen, onOpenChange} = useDisclosure();
  const[city, setCity] = useState("");
   const[showCompare, setShowCompare] = useState(false);
+  const [cityDate, setCityDate] = useState(null);
 
   const handleLoadToNewPage = () => {
 
@@ -67,6 +69,8 @@ export default function CityInfoPage() {
         // Try to get city information from the new service first
         console.log("Fetching city information for:", cityName);
         const cityInfo = await getCityInfo(cityName);
+        const cityLastUpdatedAt = await getCityLastUpdatedAt(cityName);
+        setCityDate(cityLastUpdatedAt)
         setDetails(cityInfo);
         setLoading(false);
 
@@ -515,9 +519,9 @@ export default function CityInfoPage() {
       <div className="text-center py-4">
         <p className="text-xs text-default-400">
           Last updated:{" "}
-          {details.updatedAt
-            ? new Date(details.updatedAt).toLocaleDateString()
-            : "—"}
+          {cityDate
+            ? new Date(cityDate).toLocaleDateString()
+            : "Not Available"}
         </p>
       </div>
     </div>

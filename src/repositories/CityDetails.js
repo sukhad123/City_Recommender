@@ -131,6 +131,18 @@ export async function getCityCache(cityName) {
     console.error("Error retrieving city details:", error);
   }
 }
+
+export async function getCityLastUpdatedAt(cityName) {
+  try {
+    const cityData = await prisma.CityDataCache.findFirst({
+      where: { city: cityName },
+    });
+    return cityData.updatedAt;
+  } catch (error) {
+    console.error("Error retrieving city details:", error);
+  }
+}
+
 {
   /**Update city details for a given city */
 }
