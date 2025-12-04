@@ -1,7 +1,7 @@
 // src/app/(private)/city/[name]/page.jsx
 "use client";
-
-import  SelectCity  from "./_components/select";
+import Link from "next/link";
+import SelectCity from "./_components/select";
 import { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import React from "react";
@@ -35,23 +35,20 @@ import InfoSection from "./_components/InfoSection";
 import KeyValueList from "./_components/KeyValueList";
 import PillList from "./_components/PillList";
 import { getCityLastUpdatedAt } from "../../../../repositories/CityDetails";
- 
-export default function CityInfoPage() {
 
+export default function CityInfoPage() {
   //Fetch the city data async from the data once the page loads
   const params = useParams();
   const searchParams = useSearchParams();
   const [details, setDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const {isOpen, onOpen, onOpenChange} = useDisclosure();
- const[city, setCity] = useState("");
-  const[showCompare, setShowCompare] = useState(false);
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [city, setCity] = useState("");
+  const [showCompare, setShowCompare] = useState(false);
   const [cityDate, setCityDate] = useState(null);
 
-  const handleLoadToNewPage = () => {
-
-  };
+  const handleLoadToNewPage = () => {};
 
   useEffect(() => {
     const fetchCityData = async () => {
@@ -60,9 +57,11 @@ export default function CityInfoPage() {
         setError(null);
 
         // Extract city name from params
-        const rawParam = Array.isArray(params?.name) ? params.name[0] : params?.name;
+        const rawParam = Array.isArray(params?.name)
+          ? params.name[0]
+          : params?.name;
         const cityName = decodeURIComponent(rawParam || "").replace(/_/g, " ");
-        const province = searchParams?.get('province') || undefined;
+        const province = searchParams?.get("province") || undefined;
         setCity(cityName);
         console.log("City name:", cityName);
 
@@ -70,20 +69,16 @@ export default function CityInfoPage() {
         console.log("Fetching city information for:", cityName);
         const cityInfo = await getCityInfo(cityName);
         const cityLastUpdatedAt = await getCityLastUpdatedAt(cityName);
-        setCityDate(cityLastUpdatedAt)
+        setCityDate(cityLastUpdatedAt);
         setDetails(cityInfo);
         setLoading(false);
 
         console.log("City info received:", cityInfo);
-        
-    
       } catch (error) {
         console.error("Error fetching city information:", error);
-        
-        
+
         // Fallback to DB or placeholders
-      
-      } 
+      }
     };
 
     fetchCityData();
@@ -99,7 +94,9 @@ export default function CityInfoPage() {
     return (
       <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-danger mb-4">Error Loading City Data</h1>
+          <h1 className="text-2xl font-bold text-danger mb-4">
+            Error Loading City Data
+          </h1>
           <p className="text-default-500">{error.message}</p>
         </div>
       </div>
@@ -110,14 +107,14 @@ export default function CityInfoPage() {
     return (
       <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-foreground mb-4">City Not Found</h1>
+          <h1 className="text-2xl font-bold text-foreground mb-4">
+            City Not Found
+          </h1>
           <p className="text-default-500">Unable to load city information.</p>
         </div>
       </div>
     );
   }
- 
-
 
   const jobs = details.jobOpportunities || {};
   const col = details.costOfLiving || {};
@@ -138,23 +135,41 @@ export default function CityInfoPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
       {/**Compare with other cities */}
-       <Button onPress={onOpen}>Compare with Other Cities</Button>
-      <Modal  isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Button onPress={onOpen}>Compare with Other Cities</Button>
+      <Button
+        color="primary"
+        as={Link}
+        href={`/jobs?city=${encodeURIComponent(city)}&province=${
+          details?.province
+        }`}
+      >
+        View Jobs
+      </Button>
+      <Button
+        color="secondary"
+        as={Link}
+        href={`/housing?city=${encodeURIComponent(city)}&province=${
+          details?.province
+        }`}
+      >
+        View Housing
+      </Button>
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex  flex-col gap-1">City Comparison Feature</ModalHeader>
+              <ModalHeader className="flex  flex-col gap-1">
+                City Comparison Feature
+              </ModalHeader>
               <ModalBody className="w-full">
-        <SelectCity initialCity={city}  />
- 
-    {/**Once Selection load the comparision */}
-               
+                <SelectCity initialCity={city} />
+
+                {/**Once Selection load the comparision */}
               </ModalBody>
               <ModalFooter>
                 <Button color="danger" variant="light" onPress={onClose}>
                   Close
                 </Button>
-               
               </ModalFooter>
             </>
           )}
@@ -165,16 +180,22 @@ export default function CityInfoPage() {
       <InfoSection title="Job Opportunities" subtitle="Industries & demand">
         <div className="grid gap-6 md:grid-cols-2">
           <div>
-            <h4 className="font-semibold mb-3 text-foreground">Top Industries</h4>
+            <h4 className="font-semibold mb-3 text-foreground">
+              Top Industries
+            </h4>
             <PillList items={jobs.topIndustries || []} />
           </div>
           <div>
-            <h4 className="font-semibold mb-3 text-foreground">Growing Sectors</h4>
+            <h4 className="font-semibold mb-3 text-foreground">
+              Growing Sectors
+            </h4>
             <PillList items={jobs.growingSectors || []} />
           </div>
         </div>
         <div className="mt-6">
-          <h4 className="font-semibold mb-3 text-foreground">Demand by Field (0–10)</h4>
+          <h4 className="font-semibold mb-3 text-foreground">
+            Demand by Field (0–10)
+          </h4>
           <KeyValueList
             items={Object.entries(jobs.demandByField || {}).map(([k, v]) => ({
               label: k,
@@ -519,9 +540,7 @@ export default function CityInfoPage() {
       <div className="text-center py-4">
         <p className="text-xs text-default-400">
           Last updated:{" "}
-          {cityDate
-            ? new Date(cityDate).toLocaleDateString()
-            : "Not Available"}
+          {cityDate ? new Date(cityDate).toLocaleDateString() : "Not Available"}
         </p>
       </div>
     </div>
