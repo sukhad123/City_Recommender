@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "react-oidc-context";
 import NavbarComponent from "../components/composite/Navbar";
@@ -22,15 +23,22 @@ export default function RootLayout({ children }) {
 function LayoutContent({ auth, router, children }) {
   const { userInfo, loading } = useUser();
 
-  if (!auth.isLoading && !auth.isAuthenticated) {
-    router.push("/");
-    return null;
-  }
+  
+  useEffect(() => {
+    if (!auth.isLoading && !auth.isAuthenticated) {
+      router.push("/");
+    }
+  }, [auth.isLoading, auth.isAuthenticated, router]);
 
-  if (loading || auth.isLoading) return null;
+  // Render nothing while auth or userInfo is loading, or while redirecting
+  if (loading || auth.isLoading || !auth.isAuthenticated) return null;
 
   return (
-    <NavbarComponent isAuthenticated={true} menuItems={authenticatedMenuItems} userInfo={userInfo}>
+    <NavbarComponent
+      isAuthenticated={true}
+      menuItems={authenticatedMenuItems}
+      userInfo={userInfo}
+    >
       {children}
     </NavbarComponent>
   );

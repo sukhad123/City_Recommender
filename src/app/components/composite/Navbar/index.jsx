@@ -1,6 +1,7 @@
 //Reusable Navbar
 "use client";
 import React, { useContext } from "react";
+import Drop_Down_navbar from "./components/profile_dropdown";
 import {
   Navbar,
   NavbarBrand,
@@ -15,6 +16,8 @@ import {
 import { useAuth } from "react-oidc-context";
 import { useAuthInfo } from "../../../auth/utils/getCurrentUserDetails";
 import { signOut } from "../../../auth/utils/signOut";
+
+
 export default function NavbarComponent({
   menuItems,
   isAuthenticated,
@@ -24,6 +27,8 @@ export default function NavbarComponent({
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const auth = useAuth();
   const user = useAuthInfo();
+  console.log("Navbar User Info:", userInfo);
+  console.log(auth);
 
   return (
     <>
@@ -54,16 +59,33 @@ export default function NavbarComponent({
           </NavbarBrand>
         </NavbarContent>
         {isAuthenticated && (
-          <NavbarContent className="hidden md:flex" justify="end">
+          <NavbarContent className="" justify="end">
+            {userInfo?.image && (
+                <Link href="/profile-update" className="inline-block">
+                  <img
+                    src={userInfo.image}
+                    className="w-9 h-9 rounded-full object-cover border border-gray-300"
+                    alt={userInfo.name || "Profile"}
+                  />
+                </Link>)}
+           
             {/**Desktop Display  */}
-            {menuItems.map((item, index) => (
+            {/* {menuItems.map((item, index) => (
               <NavbarItem key={index} isActive={item.active}>
                 <Link href={item.link}>{item.label}</Link>
               </NavbarItem>
-            ))}
+            ))} */}
 
-            <div className="flex items-center ml-4 space-x-2">
+            {/* <div className="flex items-center ml-4 space-x-2">
               {userInfo?.image ? (
+                <Link href="/profile-update" className="inline-block">
+                  <img
+                    src={userInfo.image}
+                    className="w-9 h-9 rounded-full object-cover border border-gray-300"
+                    alt={userInfo.name || "Profile"}
+                  />
+                </Link>
+             {userInfo?.image ? (
                 <Link href="/profile-update" className="inline-block">
                   <img
                     src={userInfo.image}
@@ -86,24 +108,20 @@ export default function NavbarComponent({
               >
                 <span className="font-medium">{userInfo?.name}</span>
               </Link>
-            </div>
+            </div> */}
 
-            <Button
+            {/* <Button
               onPress={() => {
                 auth.removeUser();
                 signOut();
               }}
             >
               Logout
-            </Button>
+            </Button> */}
+            <Drop_Down_navbar  menuItems={menuItems} user ={userInfo} auth={auth}/>
           </NavbarContent>
         )}
-
-        <NavbarContent className="sm:hidden" justify="end">
-          <NavbarMenuToggle
-            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-          />
-        </NavbarContent>
+ 
         {!isAuthenticated && (
           <NavbarContent className="hidden md:flex" justify="end">
             <NavbarItem>
@@ -121,26 +139,7 @@ export default function NavbarComponent({
           </NavbarContent>
         )}
 
-        <NavbarMenu>
-          {menuItems.map((item, index) => (
-            <NavbarMenuItem key={`${item}-${index}`}>
-              <Link
-                className="w-full"
-                color={
-                  index === 2
-                    ? "warning"
-                    : index === menuItems.length - 1
-                    ? "danger"
-                    : "foreground"
-                }
-                href={item.link}
-                size="lg"
-              >
-                {item.label}
-              </Link>
-            </NavbarMenuItem>
-          ))}
-        </NavbarMenu>
+      
       </Navbar>
       <div className="container mx-auto px-4 pt-16">{children}</div>
     </>

@@ -14,6 +14,7 @@ export const authenticatedMenuItems = [
   { label: "Recommendations", link: "/recommendations" },
   { label: "Jobs", link: "/jobs" },
   { label: "Housing", link: "/housing" },
+  { label: "Profile Update", link: "/profile-update" },
 
-  //  { label: "Log Out", link: "/profile" },
+    { label: "Log Out", link: "/logout" },
 ];
