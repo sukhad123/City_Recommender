@@ -13,33 +13,21 @@ export default async function validate_update_city_info()
     Update the data whose information doesn't exists
     */}
     //Step 1: Loop through all Canadian Cities
-    for(const city of cities)
-    {
-        //Try/Catch to Handle all edge cases
-        try{
-        //Step 2: Extract the City Data
+   const tasks = cities.map(async (city) => {
+    try {
         const city_data = await getCityCache(city);
-        //Step 3: Verify the data
-        if(!city_data.city)
-        {
-           //For non existing datas
-           const new_data = await getCityInformation(city);
-           //Update the new data in database
-           const data = update_city_cache(city,new_data);
-           console.log("Data Updated Successfully");
 
+        if (!city_data.city) {
+            const new_data = await getCityInformation(city);
+            await update_city_cache(city, new_data);
+            console.log(`${city} updated`);
         }
-        }
-        catch(err)
-        {
-            console.log(err);
-        }
-        
 
-
-
+    } catch (err) {
+        console.error("Error for city:", city, err);
     }
+});
 
-
+await Promise.all(tasks);
 
 }
