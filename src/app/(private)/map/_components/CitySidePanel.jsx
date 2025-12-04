@@ -1,6 +1,12 @@
 "use client";
 
-export default function CitySidePanel({ city, onClose, onOpenCity }) {
+export default function CitySidePanel({
+  city,
+  onClose,
+  onOpenCity,
+  nearbyCities = [],
+  radiusKm,
+}) {
   const open = !!city;
   if (!open) return null;
 
