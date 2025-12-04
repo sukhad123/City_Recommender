@@ -13,8 +13,14 @@ export default function HousingList({ listings, loading }) {
   }
   return (
     <div className="grid gap-4 sm:grid-cols-2">
-      {listings.map((it) => (
-        <HousingCard key={it.id} listing={it} />
+      {Object.values(
+        listings.reduce((acc, it) => {
+          const key = `${it.id}-${it.url}`;
+          if (!acc[key]) acc[key] = it;
+          return acc;
+        }, {})
+      ).map((it) => (
+        <HousingCard key={`${it.id}-${it.url}`} listing={it} />
       ))}
     </div>
   );
