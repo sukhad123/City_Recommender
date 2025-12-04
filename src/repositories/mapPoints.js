@@ -1,118 +1,376 @@
 import "server-only";
-import { getUserRecommendationsByEmail } from "./recommendations";
-import { getCityDetailsByName } from "./CityDetails";
+import { getCityDetailsFromCache } from "./CityDetails";
 
-/**
- * Geocode a city/province using OpenStreetMap Nominatim
- * Returns { lat, lng } or null if not found / error.
- */
-async function geocodeCity(city, province) {
-  if (!city) return null;
+const cities = [
+    "Airdrie",
+    "Grande Prairie",
+    "Red Deer",
+    "Beaumont",
+    "Hanna",
+    "St. Albert",
+    "Bonnyville",
+    "Hinton",
+    "Spruce Grove",
+    "Brazeau",
+    "Irricana",
+    "Strathcona County",
+    "Breton",
+    "Lacombe",
+    "Strathmore",
+    "Calgary",
+    "Leduc",
+    "Sylvan Lake",
+    "Camrose",
+    "Lethbridge",
+    "Swan Hills",
+    "Canmore",
+    "McLennan",
+    "Taber",
+    "Didzbury",
+    "Medicine Hat",
+    "Turner Valley",
+    "Drayton Valley",
+    "Olds",
+    "Vermillion",
+    "Edmonton",
+    "Onoway",
+    "Wood Buffalo",
+    "Ft. Saskatchewan",
+    "Provost",
+    "Burnaby",
+    "Lumby",
+    "City of Port Moody",
+    "Cache Creek",
+    "Maple Ridge",
+    "Prince George",
+    "Castlegar",
+    "Merritt",
+    "Prince Rupert",
+    "Chemainus",
+    "Mission",
+    "Richmond",
+    "Chilliwack",
+    "Nanaimo",
+    "Saanich",
+    "Clearwater",
+    "Nelson",
+    "Sooke",
+    "Colwood",
+    "New Westminster",
+    "Sparwood",
+    "Coquitlam",
+    "North Cowichan",
+    "Surrey",
+    "Cranbrook",
+    "North Vancouver",
+    "Terrace",
+    "Dawson Creek",
+    "Tumbler",
+    "Delta",
+    "Osoyoos",
+    "Vancouver",
+    "Fernie",
+    "Parksville",
+    "Invermere",
+    "Peace River",
+    "Vernon",
+    "Kamloops",
+    "Penticton",
+    "Victoria",
+    "Kaslo",
+    "Port Alberni",
+    "Whistler",
+    "Langley",
+    "Port Hardy",
+    "Birtle",
+    "Flin Flon",
+    "Swan River",
+    "Brandon",
+    "Snow Lake",
+    "The Pas",
+    "Cranberry Portage",
+    "Steinbach",
+    "Thompson",
+    "Dauphin",
+    "Stonewall",
+    "Winnipeg",
+    "Cap-Pele",
+    "Miramichi",
+    "Saint John",
+    "Fredericton",
+    "Moncton",
+    "Saint Stephen",
+    "Grand Bay-Westfield",
+    "Oromocto",
+    "Shippagan",
+    "Grand Falls",
+    "Port Elgin",
+    "Sussex",
+    "Memramcook",
+    "Sackville",
+    "Tracadie-Sheila",
+    "Argentia",
+    "Corner Brook",
+    "Paradise",
+    "Bishop's Falls",
+    "Labrador City",
+    "Portaux Basques",
+    "Botwood",
+    "Mount Pearl",
+    "St. John's",
+    "Brigus",
+    "Town of Hay River",
+    "Town of Inuvik",
+    "Yellowknife",
+    "Amherst",
+    "Hants County",
+    "Pictou",
+    "Annapolis",
+    "Inverness County",
+    "Pictou County",
+    "Argyle",
+    "Kentville",
+    "Queens",
+    "Baddeck",
+    "County of Kings",
+    "Richmond",
+    "Bridgewater",
+    "Lunenburg",
+    "Shelburne",
+    "Cape Breton",
+    "Lunenburg County",
+    "Stellarton",
+    "Chester",
+    "Mahone Bay",
+    "Truro",
+    "Cumberland County",
+    "New Glasgow",
+    "Windsor",
+    "East Hants",
+    "New Minas",
+    "Yarmouth",
+    "Halifax",
+    "Parrsboro",
+    "Ajax",
+    "Halton",
+    "Peterborough",
+    "Atikokan",
+    "Halton Hills",
+    "Pickering",
+    "Barrie",
+    "Hamilton",
+    "Port Bruce",
+    "Belleville",
+    "Hamilton-Wentworth",
+    "Port Burwell",
+    "Blandford-Blenheim",
+    "Hearst",
+    "Port Colborne",
+    "Blind River",
+    "Huntsville",
+    "Port Hope",
+    "Brampton",
+    "Ingersoll",
+    "Prince Edward",
+    "Brant",
+    "James",
+    "Quinte West",
+    "Brantford",
+    "Kanata",
+    "Renfrew",
+    "Brock",
+    "Kincardine",
+    "Richmond Hill",
+    "Brockville",
+    "King",
+    "Sarnia",
+    "Burlington",
+    "Kingston",
+    "Sault Ste. Marie",
+    "Caledon",
+    "Kirkland Lake",
+    "Scarborough",
+    "Cambridge",
+    "Kitchener",
+    "Scugog",
+    "Chatham-Kent",
+    "Larder Lake",
+    "Souix Lookout CoC Sioux Lookout",
+    "Chesterville",
+    "Leamington",
+    "Smiths Falls",
+    "Clarington",
+    "Lennox-Addington",
+    "South-West Oxford",
+    "Cobourg",
+    "Lincoln",
+    "St. Catharines",
+    "Cochrane",
+    "Lindsay",
+    "St. Thomas",
+    "Collingwood",
+    "London",
+    "Stoney Creek",
+    "Cornwall",
+    "Loyalist Township",
+    "Stratford",
+    "Cumberland",
+    "Markham",
+    "Sudbury",
+    "Deep River",
+    "Metro Toronto",
+    "Temagami",
+    "Dundas",
+    "Merrickville",
+    "Thorold",
+    "Durham",
+    "Milton",
+    "Thunder Bay",
+    "Dymond",
+    "Nepean",
+    "Tillsonburg",
+    "Ear Falls",
+    "Newmarket",
+    "Timmins",
+    "East Gwillimbury",
+    "Niagara",
+    "Toronto",
+    "East Zorra-Tavistock",
+    "Niagara Falls",
+    "Uxbridge",
+    "Elgin",
+    "Niagara-on-the-Lake",
+    "Vaughan",
+    "Elliot Lake",
+    "North Bay",
+    "Wainfleet",
+    "Flamborough",
+    "North Dorchester",
+    "Wasaga Beach",
+    "Fort Erie",
+    "North Dumfries",
+    "Waterloo",
+    "Fort Frances",
+    "North York",
+    "Gananoque",
+    "Norwich",
+    "Welland",
+    "Georgina",
+    "Oakville",
+    "Wellesley",
+    "Glanbrook",
+    "Orangeville",
+    "West Carleton",
+    "Gloucester",
+    "Orillia",
+    "West Lincoln",
+    "Goulbourn",
+    "Osgoode",
+    "Whitby",
+    "Gravenhurst",
+    "Oshawa",
+    "Wilmot",
+    "Grimsby",
+    "Ottawa",
+    "Windsor",
+    "Guelph",
+    "Ottawa-Carleton",
+    "Woolwich",
+    "Haldimand-Norfork",
+    "Owen Sound",
+    "York",
+    "Alberton",
+    "Montague",
+    "Stratford",
+    "Charlottetown",
+    "Souris",
+    "Summerside",
+    "Cornwall",
+    "Alma",
+    "Fleurimont",
+    "Longueuil",
+    "Amos",
+    "Gaspe",
+    "Marieville",
+    "Anjou",
+    "Gatineau",
+    "Mount Royal",
+    "Aylmer",
+    "Hull",
+    "Montreal",
+    "Beauport",
+    "Joliette",
+    "Montreal Region",
+    "Bromptonville",
+    "Jonquiere",
+    "Montreal-Est",
+    "Brosssard",
+    "Lachine",
+    "Quebec",
+    "Chateauguay",
+    "Lasalle",
+    "Saint-Leonard",
+    "Chicoutimi",
+    "Laurentides",
+    "Sherbrooke",
+    "Coaticook",
+    "LaSalle",
+    "Sorel",
+    "Laval",
+    "Thetford Mines",
+    "Dorval",
+    "Lennoxville",
+    "Victoriaville",
+    "Drummondville",
+    "Levis",
+    "Avonlea",
+    "Melfort",
+    "Swift Current",
+    "Colonsay",
+    "Nipawin",
+    "Tisdale",
+    "Craik",
+    "Prince Albert",
+    "Unity",
+    "Creighton",
+    "Regina",
+    "Weyburn",
+    "Eastend",
+    "Saskatoon",
+    "Wynyard",
+    "Esterhazy",
+    "Shell Lake",
+    "Yorkton",
+    "Gravelbourg",
+    "Carcross",
+    "Whitehorse",
+  ];
+  
 
-  const queryParts = [city, province, "Canada"].filter(Boolean);
-  const params = new URLSearchParams({
-    q: queryParts.join(", "),
-    format: "json",
-    limit: "1",
-    addressdetails: "1",
-    countrycodes: "ca", 
-  });
-
-  const url = `https://nominatim.openstreetmap.org/search?${params.toString()}`;
-
-  try {
-    const res = await fetch(url, {
-      headers: {
-        "User-Agent": "CityRecommender/1.0 (contact@example.com)",
-      },
-    });
-
-    if (!res.ok) {
-      console.warn("Nominatim geocode error status:", res.status);
-      return null;
-    }
-
-    const data = await res.json();
-    const place = data?.[0];
-    if (!place?.lat || !place?.lon) {
-      console.warn("Nominatim: no results for query:", queryParts);
-      return null;
-    }
-
-    const lat = Number(place.lat);
-    const lng = Number(place.lon);
-    if (Number.isNaN(lat) || Number.isNaN(lng)) {
-      console.warn("Nominatim: invalid coords for query:", queryParts, place);
-      return null;
-    }
-
-    return { lat, lng };
-  } catch (err) {
-    console.error("Nominatim geocode error:", err);
-    return null;
-  }
-}
-
-export async function getUserMapPointsByEmail(email) {
-  const normEmail = (email || "").trim().toLowerCase();
-  console.log("mapPoints for:", normEmail);
-
-  const recs = await getUserRecommendationsByEmail(normEmail);
-  console.log(recs);
-  console.log("recs count:", recs?.length, "sample:", recs?.slice?.(0, 3));
-
+export async function getMapPoints() {
+ 
   const detailsList = await Promise.all(
-    (recs || []).map(async (r, i) => {
-      const city = r.city || r.name || r.cityName;
-      const province = r.province || r.provinceCode || r.prov || null;
-      console.log(`[${i}] try details for`, { city, province });
+    cities.map(async (cityName, i) => {
+      const city = cityName;
+      const province = null; 
 
-      const d = await getCityDetailsByName(city, province);
+      const d = await getCityDetailsFromCache(city);
 
-      // Default mock fallback if no details found
-      const details = d || {
-        city: city || "Unknown City",
-        province: province || "ON",
-        latitude: 43.65 + Math.random() * 0.3, 
-        longitude: -79.38 + Math.random() * 0.3,
-        demographics: {
-          population: 100000 + Math.floor(Math.random() * 900000),
-        },
-        costOfLiving: {
-          singleMonthly: 2000 + Math.floor(Math.random() * 1000),
-          familyMonthly: 4500 + Math.floor(Math.random() * 1500),
-          currency: "CAD",
-        },
-        jobOpportunities: {
-          topIndustries: ["Tech", "Healthcare", "Education"],
-          growingSectors: ["AI", "Green Energy", "Tourism"],
-          demandByField: {
-            tech: 8.2,
-            healthcare: 7.5,
-            education: 6.9,
-            finance: 6.2,
-          },
-        },
-      };
-
-      let lat = details.coords?.lat ?? details.latitude ?? null;
-      let lng = details.coords?.lng ?? details.longitude ?? null;
-
-      // If coords missing, try geocoding 
-      if ((lat == null || lng == null) && city) {
-        console.log(`[${i}] missing coords, geocoding`, { city, province });
-        const geo = await geocodeCity(city, province);
-        if (geo) {
-          lat = geo.lat;
-          lng = geo.lng;
-        }
+      if (!d) {
+        console.log(`[${i}] skipped: not in cache/DB`, city);
+        return null;
       }
+
+      const details = d;
+
+      const lat = details.coords?.lat ?? details.latitude ?? null;
+      const lng = details.coords?.lng ?? details.longitude ?? null;
 
       if (lat == null || lng == null) {
         console.log(
-          `[${i}] still missing coords for`,
-          details.city,
-          details.province
+          `[${i}] skipped: missing coords in DB for`,
+          details.city ?? city,
+          details.province ?? province
         );
         return null;
       }
@@ -125,13 +383,11 @@ export async function getUserMapPointsByEmail(email) {
         population: details.demographics?.population ?? null,
         costOfLiving: {
           singleMonthly: details.costOfLiving?.singleMonthly ?? null,
-          familyMonthly: details.costOfLiving?.familyMonthly ?? null,
+           familyMonthly: details.costOfLiving?.familyMonthly ?? null,
           currency: details.costOfLiving?.currency ?? "CAD",
         },
         jobs: {
-          topIndustries: Array.isArray(details.jobOpportunities?.topIndustrities)
-            ? details.jobOpportunities.topIndustries.slice(0, 5)
-            : Array.isArray(details.jobOpportunities?.topIndustries)
+          topIndustries: Array.isArray(details.jobOpportunities?.topIndustries)
             ? details.jobOpportunities.topIndustries.slice(0, 5)
             : [],
           growingSectors: Array.isArray(details.jobOpportunities?.growingSectors)
@@ -145,7 +401,7 @@ export async function getUserMapPointsByEmail(email) {
 
   let points = (detailsList || []).filter(Boolean);
 
-  // If still empty (no recommendations or all nulls), inject 3 demo markers
+ //demo points if absolutely nothing found
   if (points.length === 0) {
     console.log("⚙️ Using mock demo points...");
     points = [
@@ -203,6 +459,5 @@ export async function getUserMapPointsByEmail(email) {
     ];
   }
 
-  console.log("points out:", points.length, "sample:", points.slice(0, 2));
   return points;
 }

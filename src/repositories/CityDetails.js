@@ -34,6 +34,14 @@ export async function getCityDetailsByName(city, province) {
   }
 }
 
+export async function getCityDetailsFromCache(city) {
+  if (!city) return null;
+  const row = await prisma.cityDataCache.findFirst({
+    where: { city: { equals: city, mode: "insensitive" } },
+  });
+  return row?.data ?? null;
+}
+
 /**
  * Select heavy JSON sections only (for the City page), by city + (optional) province.
  */
