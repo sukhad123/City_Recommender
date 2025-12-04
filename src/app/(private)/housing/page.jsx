@@ -1,15 +1,35 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SearchForm from "./_components/SearchForm";
 import HousingList from "./_components/HousingList";
 import { searchHousing } from "../../../repositories/housing";
 import { useAuthInfo } from "../../auth/utils/getCurrentUserDetails";
+import { useSearchParams } from "next/navigation";
 
 export default function HousingPage() {
   const user = useAuthInfo(); // private layout gates auth
   const [loading, setLoading] = useState(false);
   const [listings, setListings] = useState([]);
+
+  const searchParams = useSearchParams();
+  const cityFromUrl = searchParams.get("city");
+  const provinceFromUrl = searchParams.get("province");
+
+  useEffect(() => {
+    if (!cityFromUrl) return;
+
+    async function autoSearchFromCity() {
+      await handleSearch({
+        listingType: "for_rent", // default
+        city: cityFromUrl,
+        bedrooms: undefined,
+        bathrooms: undefined,
+      });
+    }
+
+    autoSearchFromCity();
+  }, [cityFromUrl]);
 
   async function handleSearch(params) {
     setLoading(true);

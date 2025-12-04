@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { PROVINCES } from "../../../../constants/geo/provinces";
 
 const ALL_CITIES_KEY = "*";
@@ -54,9 +55,12 @@ function plusToRange(s) {
 }
 
 export default function SearchForm({ onSearch }) {
+  const searchParams = useSearchParams();
+  const cityFromUrl = searchParams.get("city");
+  const provinceFromUrl = searchParams.get("province");
   const [listingType, setListingType] = useState("for_rent"); // "for_rent" | "for_sale"
-  const [province, setProvince] = useState("ON");
-  const [city, setCity] = useState("");
+  const [province, setProvince] = useState(provinceFromUrl || "ON");
+  const [city, setCity] = useState(cityFromUrl || "");
   const [bedrooms, setBedrooms] = useState(""); // "2+"
   const [bathrooms, setBathrooms] = useState(""); // "1+"
 
