@@ -1,6 +1,10 @@
 "use client";
+import Link from "next/link";
+import { PROVINCES } from "../../../../constants/geo/provinces";
 
-import { useState, useMemo } from "react";
+const ALL_CITIES_KEY = "*";
+
+import { useState, useMemo, useEffect } from "react";
 import {
   Autocomplete,
   AutocompleteItem,
@@ -12,32 +16,32 @@ import {
 } from "@heroui/react";
 
 // Provinces
-const PROVINCES = [
-  { code: "AB", name: "Alberta" },
-  { code: "BC", name: "British Columbia" },
-  { code: "MB", name: "Manitoba" },
-  { code: "NB", name: "New Brunswick" },
-  { code: "NL", name: "Newfoundland and Labrador" },
-  { code: "NS", name: "Nova Scotia" },
-  { code: "ON", name: "Ontario" },
-  { code: "PE", name: "Prince Edward Island" },
-  { code: "QC", name: "Quebec" },
-  { code: "SK", name: "Saskatchewan" },
-];
+// const PROVINCES = [
+//   { code: "AB", name: "Alberta" },
+//   { code: "BC", name: "British Columbia" },
+//   { code: "MB", name: "Manitoba" },
+//   { code: "NB", name: "New Brunswick" },
+//   { code: "NL", name: "Newfoundland and Labrador" },
+//   { code: "NS", name: "Nova Scotia" },
+//   { code: "ON", name: "Ontario" },
+//   { code: "PE", name: "Prince Edward Island" },
+//   { code: "QC", name: "Quebec" },
+//   { code: "SK", name: "Saskatchewan" },
+// ];
 
 // Minimal demo list—swap for your full per-province map if available
-const CITIES_BY_PROVINCE = {
-  ON: ["Toronto", "Mississauga", "Ottawa", "London", "Kitchener", "Waterloo"],
-  BC: ["Vancouver", "Surrey", "Burnaby", "Richmond", "Victoria", "Kelowna"],
-  QC: ["Montreal", "Quebec City", "Laval", "Gatineau"],
-  AB: ["Calgary", "Edmonton", "Red Deer"],
-  MB: ["Winnipeg"],
-  NS: ["Halifax"],
-  NB: ["Moncton", "Saint John", "Fredericton"],
-  NL: ["St. John's"],
-  PE: ["Charlottetown"],
-  SK: ["Saskatoon", "Regina"],
-};
+// const CITIES_BY_PROVINCE = {
+//   ON: ["Toronto", "Mississauga", "Ottawa", "London", "Kitchener", "Waterloo"],
+//   BC: ["Vancouver", "Surrey", "Burnaby", "Richmond", "Victoria", "Kelowna"],
+//   QC: ["Montreal", "Quebec City", "Laval", "Gatineau"],
+//   AB: ["Calgary", "Edmonton", "Red Deer"],
+//   MB: ["Winnipeg"],
+//   NS: ["Halifax"],
+//   NB: ["Moncton", "Saint John", "Fredericton"],
+//   NL: ["St. John's"],
+//   PE: ["Charlottetown"],
+//   SK: ["Saskatoon", "Regina"],
+// };
 
 const BED_OPTIONS = ["", "1+", "2+", "3+", "4+"];
 const BATH_OPTIONS = ["", "1+", "2+", "3+", "4+"];
@@ -56,7 +60,22 @@ export default function SearchForm({ onSearch }) {
   const [bedrooms, setBedrooms] = useState(""); // "2+"
   const [bathrooms, setBathrooms] = useState(""); // "1+"
 
-  const cities = useMemo(() => CITIES_BY_PROVINCE[province] ?? [], [province]);
+  const [cityMap, setCityMap] = useState({});
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      const data = await import(
+        "../../../../constants/geo/canadian-cities.json"
+      );
+      if (mounted) setCityMap(data.default || data);
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const cities = useMemo(() => cityMap[province] ?? [], [cityMap, province]);
 
   const submit = () => {
     // Apify actor requires city (we use province only to filter city list)
@@ -166,6 +185,9 @@ export default function SearchForm({ onSearch }) {
 
       {/* Submit */}
       <div className="sm:col-span-2 md:col-span-3 xl:col-span-6 flex justify-end">
+        <Button as={Link} href="/housing/saved" variant="flat">
+          View Saved
+        </Button>
         <Button color="primary" onPress={submit}>
           Search
         </Button>

@@ -1,5 +1,5 @@
 "use client";
-
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { Autocomplete, AutocompleteItem, Input, Button } from "@heroui/react";
 import { PROVINCES } from "../../../../constants/geo/provinces";
@@ -82,7 +82,15 @@ export default function SearchForm({ onSearch }) {
       <Autocomplete
         label="City (optional)"
         selectedKey={city}
-        onSelectionChange={(key) => setCity(String(key))}
+        onSelectionChange={(key) => {
+          const value = String(key);
+          setCity(value);
+          if (value !== ALL_CITIES_KEY) {
+            setCityQuery(value); // ✅ this fixes the double-click issue
+          } else {
+            setCityQuery("");
+          }
+        }}
         allowsCustomValue={false}
         inputValue={cityQuery}
         onInputChange={setCityQuery}
@@ -113,6 +121,10 @@ export default function SearchForm({ onSearch }) {
         onChange={(e) => setTitle(e.target.value)}
         className="w-full"
       />
+
+      <Button as={Link} href="/jobs/saved" variant="flat">
+        View Saved
+      </Button>
 
       <Button color="primary" onPress={handleSearch} isDisabled={!canSearch}>
         Search
