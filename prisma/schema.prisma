@@ -508,3 +508,40 @@ enum CitySize {
   Medium
   Large
 }
+
+model SavedJob {
+  id         String   @id @default(cuid())
+  userEmail  String
+  externalId String
+  title      String
+  company    String?
+  location   String?
+  url        String
+  salary     String?
+  createdAt  DateTime @default(now())
+  data       Json?
+
+  @@unique([userEmail, externalId])
+  @@index([userEmail])
+}
+
+model SavedHousing {
+  id         String   @id @default(cuid())
+  userEmail  String
+  externalId String
+  title      String
+  address    String?
+  city       String?
+  province   String?
+  priceText  String?
+  url        String
+  image      String?
+  beds       Int?
+  baths      Int?
+  type       String?
+  createdAt  DateTime @default(now())
+  data       Json?
+
+  @@unique([userEmail, externalId])
+  @@index([userEmail])
+}

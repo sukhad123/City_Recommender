@@ -3,7 +3,14 @@ import "../../../../libs/leaflet-setup";
 import { MapContainer, TileLayer } from "react-leaflet";
 import CityMarkersLayer from "./CityMarkersLayer";
 
-export default function MapView({ center, zoom = 4, points, onMarkerClick }) {
+export default function MapView({
+  center,
+  zoom = 4,
+  points,
+  onMarkerClick,
+  selectedCity,
+  radiusKm,
+}) {
   return (
     <MapContainer
       center={center}
@@ -16,7 +23,12 @@ export default function MapView({ center, zoom = 4, points, onMarkerClick }) {
         attribution="&copy; OpenStreetMap contributors"
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <CityMarkersLayer points={points} onMarkerClick={onMarkerClick} />
+      <CityMarkersLayer
+        points={points}
+        onMarkerClick={onMarkerClick}
+        selectedCity={selectedCity}
+        radiusKm={radiusKm}
+      />
     </MapContainer>
   );
 }
