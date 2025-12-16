@@ -3,6 +3,7 @@ This application recommends users multiple canadian cities on the basis of speci
 
 This application is built with Next.js, integrating a variety of modern technologies to deliver a rich user experience. It leverages AWS for authentication and storage, Prisma for database management, and Tailwind CSS for styling. The application aims to provide a scalable and maintainable architecture, incorporating features like theme switching, UI component libraries, and server-side rendering.
 
+🔗 **Live Application:** [city_recommender](https://prj-666-team-9.vercel.app/)
 ## 🌟 Key Features
 
 - **Authentication**: Secure user authentication using AWS Cognito and `react-oidc-context`.
