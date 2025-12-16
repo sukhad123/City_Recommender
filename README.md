@@ -29,7 +29,7 @@ This application is built with Next.js, integrating a variety of modern technolo
 |               | Prisma, @prisma/extension-accelerate        | ORM for type-safe database access and performance enhancements.                                             |
 |               | MongoDB, Mongoose                           | NoSQL database and ODM for flexible data storage.                                                          |
 |               | Inngest                                     | Platform for managing background jobs and asynchronous tasks.                                               |
-| **Database**  | MongoDB                                     | Scalable NoSQL database.                                                                                   |
+| **Database**  | Postgres                                   |                                               |
 | **Authentication** | AWS Cognito, react-oidc-context, jwt-decode | Secure user authentication and authorization.                                                               |
 | **Cloud**     | AWS (Cognito, S3)                           | Cloud services for authentication and storage.                                                              |
 | **AI**        | OpenAI API                                  | Integration with OpenAI for AI-powered features.                                                            |
