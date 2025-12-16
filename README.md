@@ -178,19 +178,10 @@ Contributions are welcome! Please follow these steps:
 4.  Push your changes to your fork.
 5.  Submit a pull request to the main repository.
 
-## 📝 License
 
-This project is licensed under the [MIT License](LICENSE).
+## 👥 Contributors
 
-## 📬 Contact
-
-Sukhad Adhikari
-Adnan Mohammed
-Yahya
-Gordan Tan
-
-## 💖 Thanks Message
-
-Thank you for checking out this project! We hope it provides a solid foundation for building your next-generation application. Your contributions and feedback are highly appreciated.
-
-This is written by [readme.ai](https://readme-generator-phi.vercel.app/).
+- **Sukhad Adhikari**
+- **Adnan Mohammed** 
+- **Yahya**
+- **Gordan Tan**
